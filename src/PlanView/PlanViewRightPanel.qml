@@ -31,8 +31,21 @@ Item {
     Rectangle {
         id:             rightPanelBackground
         anchors.fill:   parent
-        color:          qgcPal.window
+        color:          qgcPal.windowShade
         opacity:        0.85
+        radius:         ScreenTools.defaultBorderRadius
+        border.width:   1
+        border.color:   qgcPal.brandingBlue
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: ScreenTools.defaultFontPixelWidth * 0.5
+            radius: Math.max(0, parent.radius - ScreenTools.defaultFontPixelWidth * 0.25)
+            color: "transparent"
+            border.width: 1
+            border.color: qgcPal.buttonBorder
+            opacity: 0.35
+        }
     }
 
 

@@ -67,7 +67,21 @@ RowLayout {
 
         background: Rectangle {
             color:      QGroundControl.globalPalette.window
-            opacity:    0.75
+            radius:     4
+            opacity:    0.97
+            border.width: 1
+            border.color: QGroundControl.globalPalette.groupBorder
+
+            // Top accent line
+            Rectangle {
+                anchors.top:    parent.top
+                anchors.left:   parent.left
+                anchors.right:  parent.right
+                height:         2
+                radius:         4
+                color:          QGroundControl.globalPalette.colorBlue
+                opacity:        0.9
+            }
         }
 
         Row {
@@ -113,7 +127,7 @@ RowLayout {
                 RowLayout {
                     Layout.fillWidth: true
 
-                    QGCLabel { Layout.fillWidth: true; text: qsTr("RTL Altitude") }
+                    QGCLabel { Layout.fillWidth: true; text: qsTr("RTL Altitude"); elide: Text.ElideRight }
                     FactTextField {
                         fact:                   controller.getParameterFact(-1, "RTL_RETURN_ALT")
                         Layout.minimumWidth:    _editFieldWidth
@@ -124,7 +138,7 @@ RowLayout {
                     Layout.fillWidth:   true
                     visible:            _mpcLandSpeedFact && controller.vehicle && !controller.vehicle.fixedWing
 
-                    QGCLabel { Layout.fillWidth: true; text: qsTr("Land Descent Rate:") }
+                    QGCLabel { Layout.fillWidth: true; text: qsTr("Land Descent Rate:"); elide: Text.ElideRight }
                     FactTextField {
                         fact:                   _mpcLandSpeedFact
                         Layout.minimumWidth:    _editFieldWidth
@@ -135,7 +149,7 @@ RowLayout {
                     Layout.fillWidth:   true
                     visible:            _precisionLandingFact
 
-                    QGCLabel { Layout.fillWidth: true; text: qsTr("Precision Landing") }
+                    QGCLabel { Layout.fillWidth: true; text: qsTr("Precision Landing"); elide: Text.ElideRight }
                     FactComboBox {
                         fact:                   _precisionLandingFact
                         indexModel:             false

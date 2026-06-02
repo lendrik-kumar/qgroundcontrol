@@ -15,7 +15,6 @@ RowLayout {
     QGCLabel {
         id:                  label
         Layout.fillWidth:    true
-        Layout.minimumWidth: implicitWidth
     }
 
     QGCSlider {

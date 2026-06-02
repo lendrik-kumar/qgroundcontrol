@@ -6,6 +6,8 @@ import QGroundControl.Controls
 import QGroundControl.FlyView
 
 RowLayout {
+    spacing: ScreenTools.defaultFontPixelWidth * 0.75
+
     TelemetryValuesBar {
         Layout.alignment:       Qt.AlignBottom
         extraWidth:             instrumentPanel.extraValuesWidth

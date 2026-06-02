@@ -47,7 +47,9 @@ Item {
         anchors.fill:       parent
         sourceSize.height:  height
         source:             root._path.length > 0
-                            ? "image://coloredsvg" + root._path + "?color=" + root._hex
+                            ? (root._path.endsWith(".svg") 
+                               ? "image://coloredsvg" + root._path + "?color=" + root._hex 
+                               : root.source)
                             : ""
     }
 }

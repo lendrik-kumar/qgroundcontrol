@@ -20,9 +20,10 @@ Item {
 
         ColumnLayout {
             id:         mainLayout
-            x:          Math.max(0, root.width / 2 - width / 2)
-            width:      Math.max(implicitWidth, ScreenTools.defaultFontPixelWidth * 50)
-            spacing:    ScreenTools.defaultFontPixelHeight
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: ScreenTools.defaultFontPixelWidth * 2
+            spacing:    ScreenTools.defaultFontPixelHeight * 1.5
         }
     }
 }

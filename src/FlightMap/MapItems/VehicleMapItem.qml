@@ -27,6 +27,8 @@ MapQuickItem {
     property var    _map:           map
     property bool   _multiVehicle:  QGroundControl.multiVehicleManager.vehicles.count > 1
 
+    QGCPalette { id: qgcPal }
+
     sourceItem: Item {
         id:         vehicleItem
         width:      vehicleIcon.width
@@ -36,7 +38,7 @@ MapQuickItem {
         MultiEffect {
             source: vehicleIcon
             shadowEnabled: vehicleIcon.visible && _adsbVehicle
-            shadowColor: Qt.rgba(0.94,0.91,0,1.0)
+            shadowColor: Qt.rgba(0.15,0.85,1.0,1.0)
             shadowVerticalOffset: 4
             shadowHorizontalOffset: 4
             shadowBlur: 1.0
@@ -44,6 +46,81 @@ MapQuickItem {
             shadowScale: 1.3
             blurMax: 32
             blurMultiplier: .1
+        }
+
+        // Tactical Radar Reticle
+        Item {
+            id: radarReticle
+            anchors.centerIn: vehicleIcon
+            width: vehicleIcon.width * 1.5
+            height: width
+            visible: vehicleIcon.visible
+            opacity: alert ? 0.95 : (_adsbVehicle ? 0.55 : 0.65)
+
+            // Outer clockwise ring
+            Rectangle {
+                anchors.fill: parent
+                radius: width / 2
+                color: "transparent"
+                border.width: 1
+                border.color: alert ? qgcPal.colorRed : qgcPal.colorBlue
+
+                RotationAnimation on rotation {
+                    loops: Animation.Infinite
+                    from: 0; to: 360
+                    duration: 4000
+                }
+
+                // Add some structural gaps by masking or using an inner overlay
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width + 2
+                    height: parent.height * 0.2
+                    color: "transparent"
+                }
+            }
+
+            // Inner counter-clockwise brackets
+            Item {
+                anchors.centerIn: parent
+                width: parent.width * 0.8
+                height: width
+
+                RotationAnimation on rotation {
+                    loops: Animation.Infinite
+                    from: 360; to: 0
+                    duration: 3000
+                }
+
+                Rectangle {
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width * 0.2
+                    height: 3
+                    color: alert ? qgcPal.colorRed : qgcPal.colorBlue
+                }
+                Rectangle {
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width * 0.2
+                    height: 3
+                    color: alert ? qgcPal.colorRed : qgcPal.colorBlue
+                }
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 3
+                    height: parent.height * 0.2
+                    color: alert ? qgcPal.colorRed : qgcPal.colorBlue
+                }
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 3
+                    height: parent.height * 0.2
+                    color: alert ? qgcPal.colorRed : qgcPal.colorBlue
+                }
+            }
         }
 
         Repeater {
@@ -115,6 +192,7 @@ MapQuickItem {
             width:              _root.size
             sourceSize.width:   _root.size
             fillMode:           Image.PreserveAspectFit
+            opacity:            alert ? 1.0 : 0.95
             transform: Rotation {
                 origin.x:       vehicleIcon.width  / 2
                 origin.y:       vehicleIcon.height / 2

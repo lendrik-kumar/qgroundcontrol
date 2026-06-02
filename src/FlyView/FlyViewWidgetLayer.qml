@@ -33,57 +33,89 @@ Item {
     property rect   _centerViewport:        Qt.rect(0, 0, width, height)
     property real   _rightPanelWidth:       ScreenTools.defaultFontPixelWidth * 30
     property real   _layoutMargin:          ScreenTools.defaultFontPixelWidth * 0.75
-    property bool   _layoutSpacing:         ScreenTools.defaultFontPixelWidth
+    property real   _layoutSpacing:         ScreenTools.defaultFontPixelWidth * 0.75
     property bool   _showSingleVehicleUI:   true
+
+    QGCPalette { id: qgcPal }
 
     QGCToolInsets {
         id:                     _totalToolInsets
         leftEdgeTopInset:       toolStrip.leftEdgeTopInset
         leftEdgeCenterInset:    toolStrip.leftEdgeCenterInset
         leftEdgeBottomInset:    virtualJoystickMultiTouch.visible ? virtualJoystickMultiTouch.leftEdgeBottomInset : parentToolInsets.leftEdgeBottomInset
-        rightEdgeTopInset:      topRightPanel.rightEdgeTopInset
-        rightEdgeCenterInset:   topRightPanel.rightEdgeCenterInset
-        rightEdgeBottomInset:   bottomRightRowLayout.rightEdgeBottomInset
+        rightEdgeTopInset:      rightZoneContainer.rightEdgeTopInset
+        rightEdgeCenterInset:   rightZoneContainer.rightEdgeCenterInset
+        rightEdgeBottomInset:   rightZoneContainer.rightEdgeBottomInset
         topEdgeLeftInset:       toolStrip.topEdgeLeftInset
         topEdgeCenterInset:     mapScale.topEdgeCenterInset
-        topEdgeRightInset:      topRightPanel.topEdgeRightInset
+        topEdgeRightInset:      rightZoneContainer.topEdgeRightInset
         bottomEdgeLeftInset:    virtualJoystickMultiTouch.visible ? virtualJoystickMultiTouch.bottomEdgeLeftInset : parentToolInsets.bottomEdgeLeftInset
-        bottomEdgeCenterInset:  bottomRightRowLayout.bottomEdgeCenterInset
-        bottomEdgeRightInset:   virtualJoystickMultiTouch.visible ? virtualJoystickMultiTouch.bottomEdgeRightInset : bottomRightRowLayout.bottomEdgeRightInset
+        bottomEdgeCenterInset:  rightZoneContainer.bottomEdgeCenterInset
+        bottomEdgeRightInset:   virtualJoystickMultiTouch.visible ? virtualJoystickMultiTouch.bottomEdgeRightInset : rightZoneContainer.bottomEdgeRightInset
     }
 
-    FlyViewTopRightPanel {
-        id:                     topRightPanel
-        anchors.top:            parent.top
-        anchors.right:          parent.right
-        maximumHeight:          parent.height - (bottomRightRowLayout.height + _margins * 4)
-
-        property real topEdgeRightInset:    height + _layoutMargin
-        property real rightEdgeTopInset:    width + _layoutMargin
-        property real rightEdgeCenterInset: rightEdgeTopInset
-    }
-
-    FlyViewTopRightColumnLayout {
-        id:                 topRightColumnLayout
+    Item {
+        id:                 rightZoneContainer
+        anchors.right:      parent.right
         anchors.top:        parent.top
-        anchors.right:      parent.right
-        spacing:            _layoutSpacing
-        visible:           !topRightPanel.visible
-
-        property real topEdgeRightInset:    childrenRect.height + _layoutMargin
-        property real rightEdgeTopInset:    width + _layoutMargin
-        property real rightEdgeCenterInset: rightEdgeTopInset
-    }
-
-    FlyViewBottomRightRowLayout {
-        id:                 bottomRightRowLayout
         anchors.bottom:     parent.bottom
-        anchors.right:      parent.right
-        spacing:            _layoutSpacing
+        width:              Math.min(Math.max(_root.width * 0.22, ScreenTools.defaultFontPixelWidth * 24), ScreenTools.defaultFontPixelWidth * 42)
+        visible:            !QGroundControl.videoManager.fullScreen && !ScreenTools.isTinyScreen
 
-        property real bottomEdgeRightInset:     height + _layoutMargin
-        property real bottomEdgeCenterInset:    bottomEdgeRightInset
-        property real rightEdgeBottomInset:     width + _layoutMargin
+        property real rightEdgeTopInset:    visible ? width + _layoutMargin : 0
+        property real rightEdgeCenterInset: visible ? width + _layoutMargin : 0
+        property real rightEdgeBottomInset: visible ? width + _layoutMargin : 0
+        property real topEdgeRightInset:    visible ? height : 0
+        property real bottomEdgeRightInset: visible ? width + _layoutMargin : 0
+        property real bottomEdgeCenterInset: visible ? ScreenTools.defaultFontPixelHeight * 2.5 : 0
+
+        ColumnLayout {
+            anchors.fill:       parent
+            anchors.margins:    _layoutMargin
+            spacing:            _layoutSpacing
+
+            TacticalPanelFrame {
+                Layout.fillWidth:       true
+                Layout.preferredHeight: parent.height * 0.6 - (_layoutSpacing / 2)
+                title:                  qsTr("Flight")
+                accentColor:            qgcPal.brandingBlue
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing:      _layoutSpacing
+
+                    FlyViewTopRightPanel {
+                        id:                     topRightPanel
+                        Layout.fillWidth:       true
+                        Layout.fillHeight:      true
+                        maximumHeight:          parent.height
+                    }
+
+                    FlyViewTopRightColumnLayout {
+                        id:                 topRightColumnLayout
+                        Layout.fillWidth:   true
+                        visible:           !topRightPanel.visible
+                    }
+                }
+            }
+
+            TacticalPanelFrame {
+                Layout.fillWidth:       true
+                Layout.fillHeight:      true
+                title:                  qsTr("Systems")
+                accentColor:            qgcPal.colorOrange
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    FlyViewBottomRightRowLayout {
+                        id:                 bottomRightRowLayout
+                        Layout.fillWidth:   true
+                        Layout.alignment:   Qt.AlignBottom
+                    }
+                }
+            }
+        }
     }
 
     FlyViewMissionCompleteDialog {
@@ -184,6 +216,185 @@ Item {
     Component {
         id: preFlightChecklistPopup
         FlyViewPreFlightChecklistPopup {
+        }
+    }
+
+    // Tactical Command Center Overlay
+    TacticalActionOverlay {
+        id: tacticalOverlay
+        z: QGroundControl.zOrderTopMost + 2
+    }
+
+    // Sci-Fi Boot Loader / Scanning Vector when no vehicle is connected
+    Rectangle {
+        id:                 bootLoaderOverlay
+        anchors.fill:       parent
+        color:              "transparent"
+        visible:            false
+
+        // Dark dimming overlay to focus on the scanner
+        Rectangle {
+            anchors.fill: parent
+            color:        "#040B14"
+            opacity:      0.65
+        }
+
+        Item {
+            anchors.centerIn: parent
+            width:  ScreenTools.defaultFontPixelWidth * 35
+            height: ScreenTools.defaultFontPixelWidth * 35
+
+            // ── Darshak Logo ─────────────────────────────────────────────────
+            Image {
+                anchors.centerIn: parent
+                width:  parent.width * 0.4
+                height: width
+                source: "qrc:/res/darshak_logo.png"
+                fillMode: Image.PreserveAspectFit
+                mipmap: true
+            }
+
+            // ── Canvas-based Radial Sweep ────────────────────────────────────
+            Canvas {
+                id: radialCanvas
+                anchors.fill: parent
+                onPaint: {
+                    var ctx = getContext("2d")
+                    ctx.clearRect(0, 0, width, height)
+                    var centerX = width / 2
+                    var centerY = height / 2
+                    var radius = (width / 2) * 0.75
+                    
+                    // Background track
+                    ctx.beginPath()
+                    ctx.lineWidth = ScreenTools.defaultFontPixelWidth * 0.3
+                    ctx.strokeStyle = "rgba(0, 229, 255, 0.15)"
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+                    ctx.stroke()
+
+                    // Cyber-blue active sweep arc (90 degrees)
+                    ctx.beginPath()
+                    ctx.lineWidth = ScreenTools.defaultFontPixelWidth * 0.6
+                    ctx.strokeStyle = "#6BBCD9"  // sky-blue from palette
+                    ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI / 2)
+                    ctx.stroke()
+                }
+
+                RotationAnimation on rotation {
+                    loops:      Animation.Infinite
+                    from:       0
+                    to:         360
+                    duration:   2000
+                    running:    bootLoaderOverlay.visible
+                }
+            }
+
+            // ── Sequential Target Nodes ──────────────────────────────────────
+            Repeater {
+                model: 4
+                Rectangle {
+                    width:  ScreenTools.defaultFontPixelWidth * 1.5
+                    height: width
+                    radius: width / 2
+                    color:  qgcPal.window
+                    border.color: qgcPal.colorBlue
+                    border.width: ScreenTools.defaultFontPixelWidth * 0.3
+                    
+                    x: parent.width/2 - width/2 + (parent.width/2 * 0.75) * Math.cos(index * Math.PI/2)
+                    y: parent.height/2 - height/2 + (parent.height/2 * 0.75) * Math.sin(index * Math.PI/2)
+                    
+                    opacity: 0
+                    SequentialAnimation on opacity {
+                        loops:      Animation.Infinite
+                        running:    bootLoaderOverlay.visible
+                        PauseAnimation { duration: index * 500 }
+                        NumberAnimation { to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                        PauseAnimation { duration: 2000 - index * 500 - 500 }
+                        NumberAnimation { to: 0.0; duration: 250; easing.type: Easing.OutCubic }
+                    }
+                }
+            }
+
+            // ── DARSHAK Wordmark & Sub-label ─────────────────────────────────
+            Column {
+                anchors.centerIn: parent
+                spacing: ScreenTools.defaultFontPixelHeight * 0.4
+                
+                QGCLabel {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text:               "DARSHAK"
+                    font.family:        "Courier New"
+                    font.pointSize:     ScreenTools.largeFontPointSize * 1.2
+                    font.bold:          true
+                    font.letterSpacing: ScreenTools.defaultFontPixelWidth * 0.6
+                    color:              qgcPal.colorBlue
+                }
+
+                QGCLabel {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text:               "OBSERVER MODE — ACQUIRING LINK"
+                    font.family:        "Courier New"
+                    font.pointSize:     ScreenTools.smallFontPointSize
+                    font.letterSpacing: ScreenTools.defaultFontPixelWidth * 0.2
+                    color:              qgcPal.colorBlue
+                    
+                    SequentialAnimation on opacity {
+                        loops:      Animation.Infinite
+                        running:    bootLoaderOverlay.visible
+                        NumberAnimation { to: 0.2; duration: 800; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 0.9; duration: 800; easing.type: Easing.InOutSine }
+                    }
+                }
+            }
+        }
+    }
+
+    // ─── Tactical Notification Drawer ─────────────────────────────────────────
+    // Semi-transparent severity-coded alert log, docked to the right edge.
+    // Toggle via the pill button that stays permanently visible.
+
+    property bool _notifDrawerOpen: false
+
+    TacticalNotificationDrawer {
+        id:             _notifDrawer
+        anchors.right:  parent.right
+        anchors.top:    parent.top
+        anchors.bottom: parent.bottom
+        activeVehicle:  _root._activeVehicle
+        drawerOpen:     _root._notifDrawerOpen
+        z:              QGroundControl.zOrderWidgets + 1
+    }
+
+    // Toggle pill — always anchored to the right edge, vertically centred
+    Rectangle {
+        id:                     _notifToggleBtn
+        anchors.right:          parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.rightMargin:    _root._notifDrawerOpen ? _notifDrawer.width : 0
+        width:                  ScreenTools.defaultFontPixelHeight * 1.6
+        height:                 ScreenTools.defaultFontPixelHeight * 5
+        radius:                 ScreenTools.defaultFontPixelHeight * 0.3
+        color:                  qgcPal.window
+        border.color:           qgcPal.colorBlue
+        border.width:           ScreenTools.defaultFontPixelHeight * 0.08
+        opacity:                0.92
+        z:                      QGroundControl.zOrderWidgets + 2
+
+        Behavior on anchors.rightMargin {
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
+
+        // Alert bell icon (text label as fallback)
+        QGCLabel {
+            anchors.centerIn:   parent
+            text:               "🔔"
+            font.pointSize:     ScreenTools.defaultFontPointSize * 0.85
+            color:              qgcPal.colorBlue
+        }
+
+        QGCMouseArea {
+            fillItem: parent
+            onClicked: _root._notifDrawerOpen = !_root._notifDrawerOpen
         }
     }
 }

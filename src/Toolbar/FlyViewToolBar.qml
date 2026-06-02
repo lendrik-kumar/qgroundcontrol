@@ -16,15 +16,35 @@ Item {
 
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
     property bool   _communicationLost: _activeVehicle ? _activeVehicle.vehicleLinkManager.communicationLost : false
-    property color  _mainStatusBGColor: qgcPal.brandingPurple
+    property color  _mainStatusBGColor: qgcPal.colorBlue
     property real   _leftRightMargin:   ScreenTools.defaultFontPixelWidth * 0.75
     property var    _guidedController:  globals.guidedControllerFlyView
+    property real   _segmentPadding:    ScreenTools.defaultFontPixelWidth * 0.6
+    property real   _segmentRadius:     ScreenTools.defaultBorderRadius
 
     function dropMainStatusIndicatorTool() {
         mainStatusIndicator.dropMainStatusIndicator();
     }
 
     QGCPalette { id: qgcPal }
+
+    // Unified NEXUS COMMAND toolbar background — single dark glassmorphism slab
+    Rectangle {
+        anchors.fill:   parent
+        color:          qgcPal.windowShade
+        opacity:        0.88
+        z:              -1
+    }
+
+    // Bottom scanline separator — sky-blue from palette
+    Rectangle {
+        anchors.left:   parent.left
+        anchors.right:  parent.right
+        anchors.bottom: parent.bottom
+        height:         2
+        color:          qgcPal.colorBlue
+        opacity:        0.85
+    }
 
     QGCFlickable {
         anchors.fill:       parent
@@ -38,36 +58,17 @@ Item {
 
             Item {
                 id:     leftPanel
-                width:  leftPanelLayout.implicitWidth
+                width:  leftPanelLayout.implicitWidth + (_segmentPadding * 2)
                 height: parent.height
 
-                // Gradient background behind Q button and main status indicator
-                Rectangle {
-                    id:         gradientBackground
-                    height:     parent.height
-                    width:      mainStatusLayout.width
-                    opacity:    qgcPal.windowTransparent.a
-
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0; color: _mainStatusBGColor }
-                        //GradientStop { position: qgcButton.x + qgcButton.width; color: _mainStatusBGColor }
-                        GradientStop { position: 1; color: qgcPal.window }
-                    }
-                }
-
-                // Standard toolbar background to the right of the gradient
-                Rectangle {
-                    anchors.left:   gradientBackground.right
-                    anchors.right:  parent.right
-                    height:         parent.height
-                    color:          qgcPal.windowTransparent
-                }
+                // Transparent — unified toolbar bg handles visuals
+                Item { anchors.fill: parent }
 
                 RowLayout {
                     id:         leftPanelLayout
-                    height:     parent.height
-                    spacing:    ScreenTools.defaultFontPixelWidth * 2
+                    anchors.fill: parent
+                    anchors.margins: _segmentPadding
+                    spacing:    ScreenTools.defaultFontPixelWidth * 1.5
 
                     RowLayout {
                         id:         mainStatusLayout
@@ -78,7 +79,7 @@ Item {
                             id:                 qgcButton
                             objectName:         "toolbar_qgcLogo"
                             Layout.fillHeight:  true
-                            icon.source:        "/res/QGCLogoFull.svg"
+                            icon.source:        "/res/darshak_logo.png"
                             logo:               true
                             onClicked:          mainWindow.showToolSelectDialog()
                         }
@@ -87,13 +88,6 @@ Item {
                             id:                 mainStatusIndicator
                             Layout.fillHeight:  true
                         }
-                    }
-
-                    QGCButton {
-                        id:         disconnectButton
-                        text:       qsTr("Disconnect")
-                        onClicked:  _activeVehicle.closeVehicle()
-                        visible:    _activeVehicle && _communicationLost
                     }
 
                     FlightModeIndicator {
@@ -108,9 +102,14 @@ Item {
                 width:  Math.max(guidedActionConfirm.visible ? guidedActionConfirm.width : 0, control.width - (leftPanel.width + rightPanel.width))
                 height: parent.height
 
+                // Guided action highlight only when active
                 Rectangle {
-                    anchors.fill:   parent
-                    color:          qgcPal.windowTransparent
+                    anchors.fill:    parent
+                    anchors.margins: _segmentPadding
+                    color:           "transparent"
+                    border.width:    guidedActionConfirm.visible ? 1 : 0
+                    border.color:    qgcPal.buttonHighlight
+                    opacity:         guidedActionConfirm.visible ? 0.9 : 0
                 }
 
                 GuidedActionConfirm {
@@ -125,17 +124,18 @@ Item {
 
             Item {
                 id:     rightPanel
-                width:  flyViewIndicators.width
+                width:  flyViewIndicators.width + (_segmentPadding * 2)
                 height: parent.height
 
-                Rectangle {
-                    anchors.fill:   parent
-                    color:          qgcPal.windowTransparent
-                }
+                // Transparent — unified toolbar bg handles visuals
+                Item { anchors.fill: parent }
 
                 FlyViewToolBarIndicators {
                     id:     flyViewIndicators
                     height: parent.height
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: _segmentPadding
                 }
             }
         }
@@ -143,16 +143,19 @@ Item {
 
     // The guided action message display is outside of the GuidedActionConfirm control so that it doesn't end up as
     // part of the Flickable
-    Rectangle {
-        id:                         guidedActionMessageDisplay
+        Rectangle {
+            id:                         guidedActionMessageDisplay
         anchors.top:                control.bottom
         anchors.topMargin:          _margins
         x:                          control.mapFromItem(guidedActionConfirm.parent, guidedActionConfirm.x, 0).x + (guidedActionConfirm.width - guidedActionMessageDisplay.width) / 2
         width:                      messageLabel.contentWidth + (_margins * 2)
         height:                     messageLabel.contentHeight + (_margins * 2)
-        color:                      qgcPal.windowTransparent
-        radius:                     ScreenTools.defaultBorderRadius
-        visible:                    guidedActionConfirm.visible
+            color:                      qgcPal.windowShade
+            radius:                     ScreenTools.defaultBorderRadius
+            visible:                    guidedActionConfirm.visible
+
+            border.width: 1
+            border.color: qgcPal.buttonBorder
 
         QGCLabel {
             id:         messageLabel
@@ -181,5 +184,15 @@ Item {
 
     ParameterDownloadProgress {
         anchors.fill: parent
+    }
+
+    QGCButton {
+        id:         disconnectButton
+        text:       qsTr("Disconnect")
+        anchors.right: rightPanel.left
+        anchors.rightMargin: _leftRightMargin
+        anchors.verticalCenter: parent.verticalCenter
+        visible:    _activeVehicle && _communicationLost
+        onClicked:  _activeVehicle.closeVehicle()
     }
 }

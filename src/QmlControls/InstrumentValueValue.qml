@@ -21,16 +21,39 @@ ColumnLayout {
     property real   _width:                         0
     property real   _height:                        0
 
+    // Smoothing interpolation for numeric values
+    property bool _isNumericFact: instrumentValueData && instrumentValueData.fact && typeof instrumentValueData.fact.value === "number" && (!instrumentValueData.fact.enumStrings || instrumentValueData.fact.enumStrings.length === 0)
+    property real _targetValue: _isNumericFact ? instrumentValueData.fact.value : 0
+    property real _smoothedValue: _targetValue
+
+    on_TargetValueChanged: _smoothedValue = _targetValue
+
+    QGCPalette { id: qgcPal }
+
+    Behavior on _smoothedValue {
+        NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+    }
+
     QGCLabel {
         id:                 label
         Layout.alignment:   Qt.AlignVCenter
         font.pointSize:     _fontSize
+        font.letterSpacing: 1.0
+        font.weight:        Font.Medium
         color:              instrumentValueData.isValidColor(instrumentValueData.currentColor) ? instrumentValueData.currentColor : qgcPal.text
         text:               valueText()
 
         function valueText() {
             if (instrumentValueData.fact) {
-                return instrumentValueData.fact.enumOrValueString + (instrumentValueData.showUnits ? " " + instrumentValueData.fact.units : "")
+                var valStr = ""
+                if (_isNumericFact) {
+                    // Try to use fact's decimalPlaces if available, otherwise fallback to 1
+                    var decimals = instrumentValueData.fact.decimalPlaces !== undefined ? instrumentValueData.fact.decimalPlaces : 1;
+                    valStr = Number(_smoothedValue).toFixed(decimals);
+                } else {
+                    valStr = instrumentValueData.fact.enumOrValueString;
+                }
+                return valStr + (instrumentValueData.showUnits ? " " + instrumentValueData.fact.units : "")
             } else {
                 return qsTr("–")
             }

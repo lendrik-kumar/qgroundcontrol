@@ -363,6 +363,23 @@ Item {
         anchors.fill: parent
         spacing: 0
 
+        // ── Calibration Step Progress Banner ─────────────────────────────
+        CalibrationStepBanner {
+            Layout.fillWidth: true
+            visible:          controller.calibrationActive && _showAllSidesPreview
+            totalSteps:       6
+            
+            property int completedSides: (controller.orientationCalDownSideDone ? 1 : 0) +
+                                         (controller.orientationCalUpsideDownSideDone ? 1 : 0) +
+                                         (controller.orientationCalNoseDownSideDone ? 1 : 0) +
+                                         (controller.orientationCalTailDownSideDone ? 1 : 0) +
+                                         (controller.orientationCalLeftSideDone ? 1 : 0) +
+                                         (controller.orientationCalRightSideDone ? 1 : 0)
+            
+            currentStep:      Math.min(completedSides + 1, 6)
+            stepLabels:       ["Down", "Up", "Nose", "Tail", "Left", "Right"]
+        }
+
         // Calibration trigger buttons — one per section, shown based on sectionNameFilter
         ColumnLayout {
             Layout.fillWidth: true
@@ -415,11 +432,11 @@ Item {
                 }
             }
 
-            QGCButton {
+            TacticalConfirmButton {
                 Layout.fillWidth: true
-                text:       qsTr("Factory Reset")
+                text:       qsTr("Swipe to Factory Reset")
                 visible:    sectionNameFilter === "" || sectionNameFilter === qsTr("Orientations")
-                onClicked:  controller.resetFactoryParameters()
+                onConfirm:  controller.resetFactoryParameters()
             }
 
             QGCButton {

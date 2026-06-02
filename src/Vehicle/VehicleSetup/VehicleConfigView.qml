@@ -7,7 +7,7 @@ import QGroundControl.Controls
 
 Rectangle {
     id:     vehicleConfigView
-    color:  qgcPal.window
+    color:  QGroundControl.globalPalette.window
     z:      QGroundControl.zOrderTopMost
 
     // This need to block click event leakage to underlying map.
@@ -312,6 +312,16 @@ Rectangle {
         }
     }
 
+    Rectangle {
+        anchors.fill:       leftPanel
+        anchors.margins:    -_horizontalMargin * 0.5
+        color:              qgcPal.windowShade
+        radius:             ScreenTools.defaultBorderRadius
+        border.width:       1
+        border.color:       qgcPal.buttonBorder
+        opacity:            0.55
+    }
+
     ColumnLayout {
         id:                 leftPanel
         width:              Math.max(buttonColumn.implicitWidth + _horizontalMargin, ScreenTools.defaultFontPixelWidth * 22)
@@ -537,7 +547,8 @@ Rectangle {
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
         width:                  1
-        color:                  qgcPal.windowShade
+        color:                  qgcPal.brandingBlue
+        opacity:                0.3
     }
 
     Loader {
@@ -564,5 +575,20 @@ Rectangle {
         }
 
         property var vehicleComponent
+
+        // Slide-and-fade fluid transition for Setup panels
+        opacity: status === Loader.Ready ? 1.0 : 0.0
+        transform: Translate {
+            id: panelTranslate
+            x: panelLoader.status === Loader.Ready ? 0 : 30 // slide left 30px
+        }
+
+        Behavior on opacity {
+            NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
+        }
+        
+        Behavior on transform {
+            NumberAnimation { target: panelTranslate; property: "x"; duration: 300; easing.type: Easing.OutCubic }
+        }
     }
 }

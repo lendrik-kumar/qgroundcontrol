@@ -137,12 +137,14 @@ View3D {
                 }
                 materials: [
                     PrincipledMaterial {
-                        baseColor: "gray"
-                        indexOfRefraction: 4.0
-                        metalness: 0.1
-                        opacity: 1.0
-                        roughness: 0.5
+                        baseColor: "#0A0F1A"       // Dark obsidian base
+                        metalness: 0.9             // High reflection
+                        roughness: 0.3             // Smooth glass-like finish
                         specularAmount: 1.0
+                        opacity: 0.95
+                        emissionColor: "#00E5FF"   // Cyan glow accents
+                        emissionFactor: Qt.vector3d(0.0, 0.05, 0.1) // Subtle edge glow mapping
+                        indexOfRefraction: 2.0
                     }
                 ]
             }

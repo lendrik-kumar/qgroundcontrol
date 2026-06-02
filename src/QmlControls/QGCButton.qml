@@ -10,16 +10,17 @@ import QGroundControl.Controls
 ///     If icon only, icon will be centered
 Button {
     property bool primary: false
-    property bool showBorder: qgcPal.globalTheme === QGCPalette.Light
+    property bool showBorder: true
     property real backRadius: ScreenTools.defaultBorderRadius
     property real heightFactor: 0.5
     property string iconSource: ""
     property real fontWeight: Font.Normal // default for qml Text
     property real pointSize: ScreenTools.defaultFontPointSize
+    property bool cutCorners: true
 
     property alias wrapMode: text.wrapMode
     property alias horizontalAlignment: text.horizontalAlignment
-    property alias backgroundColor: backRect.color
+    property alias backgroundColor: baseFill.color
     property alias textColor: text.color
 
     id: control
@@ -39,20 +40,35 @@ Button {
 
     QGCPalette { id: qgcPal; colorGroupEnabled: control.enabled }
 
-    background: Rectangle {
+    background: Item {
         id: backRect
-        radius: backRadius
         implicitWidth: ScreenTools.implicitButtonWidth
         implicitHeight: ScreenTools.implicitButtonHeight
-        border.width: showBorder ? 1 : 0
-        border.color: qgcPal.buttonBorder
-        color: primary ? qgcPal.primaryButton : qgcPal.button
+
+        Rectangle {
+            id: baseFill
+            anchors.fill: parent
+            radius: cutCorners ? Math.max(2, backRadius - 2) : backRadius
+            color: primary ? qgcPal.primaryButton : qgcPal.button
+            border.width: showBorder ? 1 : 0
+            border.color: qgcPal.buttonBorder
+        }
+
+        Rectangle {
+            id: edgeGlow
+            anchors.fill: parent
+            radius: backRadius
+            color: "transparent"
+            border.width: 1
+            border.color: _showHighlight ? qgcPal.buttonHighlight : qgcPal.buttonBorder
+            opacity: _showHighlight ? 0.9 : control.enabled && control.hovered ? 0.5 : 0.25
+        }
 
         Rectangle {
             anchors.fill: parent
+            radius: backRadius
             color: qgcPal.buttonHighlight
-            opacity: _showHighlight ? 1 : control.enabled && control.hovered ? .2 : 0
-            radius: parent.radius
+            opacity: _showHighlight ? 0.22 : control.enabled && control.hovered ? 0.12 : 0
         }
     }
 
@@ -74,10 +90,14 @@ Button {
         QGCLabel {
             id: text
             Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
             text: control.text
             font.pointSize: control.pointSize
             font.family: control.font.family
             font.weight: fontWeight
+            font.letterSpacing: 0.6
             color: _showHighlight ? qgcPal.buttonHighlightText : (primary ? qgcPal.primaryButtonText : qgcPal.buttonText)
             visible: control.text !== ""
         }

@@ -78,11 +78,15 @@ Item {
         height:     parent.height - 4
         spacing:    ScreenTools.defaultFontPixelWidth
 
-        QGCDelayButton {
-            text:               control.title
-            enabled:            true
+        // Sci-Fi Two-Stage Confirmation
+        TacticalConfirmButton {
+            id:             tacticalConfirm
+            text:           control.title
+            activeText:     "CONFIRMING " + control.title.toUpperCase() + "..."
+            isEmergency:    _emergencyAction
+            useHoldMode:    !_emergencyAction // Example: Swipe for emergency, Hold for normal actions
 
-            onActivated: {
+            onConfirmed: {
                 control.visible = false
                 var sliderOutputValue = 0
                 if (guidedValueSlider.visible) {
@@ -92,13 +96,14 @@ Item {
                 hideTrigger = false
                 let success = guidedController.executeAction(control.action, control.actionData, sliderOutputValue, control.optionChecked)
                 if (mapIndicator) {
-                    if (success) {
-                        mapIndicator.actionConfirmed()
-                    } else {
-                        mapIndicator.actionCancelled()
-                    }
+                    if (success) { mapIndicator.actionConfirmed() } else { mapIndicator.actionCancelled() }
                     mapIndicator = undefined
                 }
+            }
+
+            onCancelled: {
+                // We can either close the dialog or let the user try again
+                // For now, let it remain open if they just cancelled the gesture
             }
         }
 

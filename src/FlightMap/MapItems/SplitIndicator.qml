@@ -11,7 +11,16 @@ Rectangle {
     radius:         width / 2
     border.color:   indicatorColor
     color:          "transparent"
-    opacity:        0.75
+    opacity:        0.85
+
+    Rectangle {
+        anchors.fill: parent
+        radius: parent.radius
+        color: "transparent"
+        border.width: 1
+        border.color: indicatorColor
+        opacity: 0.35
+    }
 
     property color indicatorColor: "white"
 
@@ -24,6 +33,7 @@ Rectangle {
         anchors.horizontalCenter:   parent.horizontalCenter
         width:                      1
         color:                      indicatorColor
+        opacity:                    0.85
     }
 
     Rectangle {
@@ -33,6 +43,7 @@ Rectangle {
         anchors.verticalCenter:     parent.verticalCenter
         height:                     1
         color:                      indicatorColor
+        opacity:                    0.85
     }
 
     QGCMouseArea {

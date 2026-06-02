@@ -10,6 +10,7 @@ qt_add_qml_module(FlyViewModule
     VERSION 1.0
     RESOURCE_PREFIX /qml
     QML_FILES
+        AltitudeTapeLadder.qml
         CustomGuidedActionsController.qml
         DefaultChecklist.qml
         FixedWingChecklist.qml
@@ -64,7 +65,10 @@ qt_add_qml_module(FlyViewModule
         ProximityRadarValues.qml
         ProximityRadarVideoView.qml
         RoverChecklist.qml
+        SpeedTapeLadder.qml
         SubChecklist.qml
+        TacticalActionOverlay.qml
+        TacticalNotificationDrawer.qml
         TelemetryValuesBar.qml
         TerrainProgress.qml
         VehicleWarnings.qml

@@ -82,13 +82,34 @@ TextField {
         }
     }
 
-    background: Rectangle {
-        border.width:   control.validationError ? 2 : (qgcPal.globalTheme === QGCPalette.Light ? 1 : 0)
-        border.color:   control.validationError ? qgcPal.colorRed : qgcPal.buttonBorder
-        radius:         ScreenTools.defaultBorderRadius
-        color:          qgcPal.textField
+    background: Item {
         implicitWidth:  ScreenTools.implicitTextFieldWidth
         implicitHeight: ScreenTools.implicitTextFieldHeight
+
+        Rectangle {
+            id: baseFill
+            anchors.fill: parent
+            radius: Math.max(2, ScreenTools.defaultBorderRadius - 2)
+            color: qgcPal.textField
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: ScreenTools.defaultBorderRadius
+            color: "transparent"
+            border.width: 1
+            border.color: control.activeFocus ? qgcPal.buttonHighlight : qgcPal.buttonBorder
+            opacity: control.activeFocus ? 0.9 : 0.35
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: ScreenTools.defaultBorderRadius
+            color: "transparent"
+            border.width: control.validationError ? 2 : 0
+            border.color: qgcPal.colorRed
+            visible: control.validationError
+        }
 
         RowLayout {
             id:                     unitsHelpLayout

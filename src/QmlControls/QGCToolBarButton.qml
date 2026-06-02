@@ -20,11 +20,33 @@ Button {
 
     onCheckedChanged: checkable = false
 
-    background: Rectangle {
-        anchors.fill:   parent
-        color:          button.checked ? qgcPal.buttonHighlight : Qt.rgba(0,0,0,0)
-        border.color:   "red"
-        border.width:   QGroundControl.corePlugin.showTouchAreas ? 3 : 0
+    background: Item {
+        anchors.fill: parent
+
+        Rectangle {
+            anchors.fill: parent
+            radius: ScreenTools.defaultBorderRadius
+            color: button.checked ? qgcPal.buttonHighlight : Qt.rgba(0,0,0,0)
+            border.width: button.checked ? 1 : 0
+            border.color: qgcPal.buttonHighlight
+            opacity: button.checked ? 0.55 : 0
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: ScreenTools.defaultBorderRadius
+            color: Qt.rgba(0, 0, 0, 0)
+            border.color: button.hovered ? qgcPal.buttonBorder : Qt.rgba(0, 0, 0, 0)
+            border.width: button.hovered ? 1 : 0
+            opacity: button.hovered ? 0.6 : 0
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: Qt.rgba(0,0,0,0)
+            border.color: "red"
+            border.width: QGroundControl.corePlugin.showTouchAreas ? 3 : 0
+        }
     }
 
     contentItem: Row {
@@ -32,12 +54,14 @@ Button {
         anchors.verticalCenter: button.verticalCenter
         // Logo buttons render the multi-color SVG natively via VectorImage; non-logo buttons
         // tint their monochrome icon through QGCColoredImage. Plain `Row` skips visible:false items.
-        QGCVectorImage {
+        Image {
             visible:                button.logo
             height:                 ScreenTools.defaultFontPixelHeight * 2
             width:                  height
             source:                 visible ? button.icon.source : ""
             anchors.verticalCenter: parent.verticalCenter
+            fillMode:               Image.PreserveAspectFit
+            mipmap:                 true
         }
         QGCColoredImage {
             visible:                !button.logo
@@ -55,6 +79,8 @@ Button {
             text:                   button.text
             color:                  button.checked ? qgcPal.buttonHighlightText : qgcPal.buttonText
             anchors.verticalCenter: parent.verticalCenter
+            font.family:            ScreenTools.normalFontFamily
+            font.letterSpacing:     0.4
         }
     }
 }

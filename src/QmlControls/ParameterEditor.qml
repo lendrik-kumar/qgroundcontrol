@@ -142,6 +142,11 @@ Item {
         }
     }
 
+    // Tactical cyan search accent color
+    readonly property color _accentCyan:    qgcPal.colorBlue
+    readonly property color _warnAmber:     "#FFB300"
+    readonly property color _critCrimson:   "#FF1744"
+
     RowLayout {
         id:             header
         anchors.left:   parent.left
@@ -151,10 +156,28 @@ Item {
             Layout.alignment:   Qt.AlignLeft
             spacing:            ScreenTools.defaultFontPixelWidth
 
-            QGCTextField {
-                id:                     searchText
-                placeholderText:        qsTr("Search")
-                onDisplayTextChanged:   controller.searchText = displayText
+            // Search field with active cyan underline accent
+            Item {
+                implicitWidth:  searchText.implicitWidth + ScreenTools.defaultFontPixelWidth * 2
+                implicitHeight: searchText.implicitHeight
+
+                QGCTextField {
+                    id:                     searchText
+                    anchors.fill:           parent
+                    placeholderText:        qsTr("Search parameters…")
+                    onDisplayTextChanged:   controller.searchText = displayText
+                }
+
+                // Cyan bottom accent — activates on focus
+                Rectangle {
+                    anchors.left:   parent.left
+                    anchors.right:  parent.right
+                    anchors.bottom: parent.bottom
+                    height:         ScreenTools.defaultFontPixelHeight * 0.1
+                    color:          _accentCyan
+                    opacity:        searchText.activeFocus ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                }
             }
 
             QGCButton {
@@ -224,7 +247,6 @@ Item {
                     Layout.fillWidth:   true
                     spacing:            Math.ceil(ScreenTools.defaultFontPixelHeight * 0.25)
 
-
                     SectionHeader {
                         id:             categoryHeader
                         anchors.left:   parent.left
@@ -234,7 +256,7 @@ Item {
 
                         onCheckedChanged: {
                             if (checked) {
-                                controller.currentCategory  = object
+                                controller.currentCategory = object
                             }
                         }
                     }
@@ -242,17 +264,37 @@ Item {
                     Repeater {
                         model: categoryHeader.checked ? object.groups : 0
 
-                        QGCButton {
-                            width:          ScreenTools.defaultFontPixelWidth * 25
-                            text:           object.name
-                            height:         _rowHeight
-                            checked:        object == controller.currentGroup
-                            autoExclusive:  true
+                        // Tactical group button with cyan left-border when selected
+                        Item {
+                            width:  ScreenTools.defaultFontPixelWidth * 25
+                            height: _rowHeight
 
-                            onClicked: {
-                                if (!checked) _rowWidth = 10
-                                checked = true
-                                controller.currentGroup = object
+                            // Cyber-cyan left border — visible when this group is active
+                            Rectangle {
+                                id:     groupAccentBar
+                                anchors.left:   parent.left
+                                anchors.top:    parent.top
+                                anchors.bottom: parent.bottom
+                                width:  ScreenTools.defaultFontPixelHeight * 0.18
+                                color:  _root._accentCyan
+                                opacity: object == controller.currentGroup ? 1.0 : 0.0
+                                Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                            }
+
+                            QGCButton {
+                                anchors.left:   groupAccentBar.right
+                                anchors.right:  parent.right
+                                anchors.top:    parent.top
+                                anchors.bottom: parent.bottom
+                                text:           object.name
+                                checked:        object == controller.currentGroup
+                                autoExclusive:  true
+
+                                onClicked: {
+                                    if (!checked) _rowWidth = 10
+                                    checked = true
+                                    controller.currentGroup = object
+                                }
                             }
                         }
                     }
@@ -425,6 +467,8 @@ Item {
                 text:               column == 2 ? col1String() : display
                 color:              column == 2 && fact.defaultValueAvailable && !fact.valueEqualsDefault ? qgcPal.modifiedParamValue : qgcPal.text
                 font.bold:          column == 2 && fact.defaultValueAvailable && !fact.valueEqualsDefault
+                // Monospaced font for value column — prevents digit-jitter during live telemetry updates
+                font.family:        column == 2 ? "Courier New" : font.family
                 maximumLineCount:   1
                 elide:              column == 2 ? Text.ElideRight : Text.ElideNone
 
@@ -446,6 +490,61 @@ Item {
                     _editorDialogFact = fact
                     editorDialogFactory.open()
                 }
+            }
+        }
+    }
+
+    // ─── Pending Changes FAB ───────────────────────────────────────────────────
+    // Floats above the parameter table when any parameter deviates from default.
+    // Forces a tactical review before the operator navigates away.
+    property bool _hasPendingChanges: {
+        // Walk the parameter model to detect any modified values
+        if (!controller || !controller.parameters) return false
+        var model = controller.parameters
+        for (var r = 0; r < model.rowCount(); r++) {
+            var idx = model.index(r, 0)
+            var f = model.data(idx, Qt.UserRole)
+            if (f && f.defaultValueAvailable && !f.valueEqualsDefault) return true
+        }
+        return false
+    }
+
+    Rectangle {
+        id:                     pendingFAB
+        anchors.right:          parent.right
+        anchors.bottom:         parent.bottom
+        anchors.rightMargin:    ScreenTools.defaultFontPixelWidth * 1.5
+        anchors.bottomMargin:   ScreenTools.defaultFontPixelHeight * 1.5
+        width:                  fabLabel.implicitWidth + ScreenTools.defaultFontPixelWidth * 3
+        height:                 ScreenTools.defaultFontPixelHeight * 2.2
+        radius:                 ScreenTools.defaultFontPixelHeight * 0.3
+        color:                  _root._accentCyan
+        visible:                _root._hasPendingChanges
+        z:                      10
+
+        opacity: visible ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+
+        transform: Translate {
+            id: fabTranslate
+            y: pendingFAB.visible ? 0 : ScreenTools.defaultFontPixelHeight * 2
+            Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+        }
+
+        QGCLabel {
+            id:                 fabLabel
+            anchors.centerIn:   parent
+            text:               qsTr("⚠  Review Pending Changes")
+            color:              "#0B0F19"
+            font.bold:          true
+            font.pointSize:     ScreenTools.defaultFontPointSize * 0.95
+        }
+
+        QGCMouseArea {
+            fillItem: parent
+            onClicked: {
+                // Open the Modified tab to surface all pending changes
+                tabBar.currentIndex = 1
             }
         }
     }

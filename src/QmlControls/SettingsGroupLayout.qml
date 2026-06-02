@@ -14,18 +14,18 @@ ColumnLayout {
 
     property alias contentSpacing: _contentLayout.spacing
 
-    property string defaultBorderColor  : QGroundControl.globalPalette.groupBorder
+    property string defaultBorderColor  : Qt.rgba(0.29, 0.49, 0.56, 0.35) // #4A7D8F at 35%
     property string outerBorderColor    : defaultBorderColor
 
-    property string defaultHeadingPointSize:    ScreenTools.defaultFontPointSize + 1
-    property string headingPointSize:           defaultHeadingPointSize
+    property real defaultHeadingPointSize:  ScreenTools.defaultFontPointSize + 1
+    property real headingPointSize:         defaultHeadingPointSize
 
     property string heading
     property string headingDescription
     property bool   showDividers:       true
     property bool   showBorder:         true
 
-    property real _margins: ScreenTools.defaultFontPixelHeight / 2
+    property real _margins: ScreenTools.defaultFontPixelHeight
 
     // We work with a y sorted list of children for divider visibility checks
     property var _ySortedChildren: {
@@ -46,6 +46,7 @@ ColumnLayout {
             text:           heading
             font.pointSize: headingPointSize
             font.bold:      true
+            color:          qgcPal.colorBlue  // sky-blue heading from palette
         }
 
         QGCLabel {
@@ -62,10 +63,19 @@ ColumnLayout {
         Layout.fillWidth:   true
         implicitWidth:      _contentLayout.implicitWidth + (showBorder ? _margins * 2 : 0)
         implicitHeight:     _contentLayout.implicitHeight + (showBorder ? _margins * 2: 0)
-        color:              "transparent"
+        color:              qgcPal.window  // deep navy card background
         border.color:       outerBorderColor
         border.width:       showBorder ? 1 : 0
-        radius:             ScreenTools.defaultFontPixelHeight / 2
+        radius:             2
+
+        // Left accent bracket
+        Rectangle {
+            anchors.left: parent.left
+            width: 3
+            height: parent.height
+            color: qgcPal.colorBlue
+            visible: showBorder
+        }
 
         Repeater {
             model: showDividers ? _ySortedChildren.length : 0
@@ -75,7 +85,7 @@ ColumnLayout {
                 y:          _contentItem ? (_contentItem.y + _contentItem.height + _margins + (showBorder ? _margins : 0)) : 0
                 width:      parent.width - (showBorder ? _margins * 2 : 0)
                 height:     1
-                color:      QGroundControl.globalPalette.groupBorder
+                color:      Qt.rgba(0.29, 0.49, 0.56, 0.25)  // subtle slate dividers
                 visible:    _contentItem ? _isContentItemVisible() : false
 
                 property var _contentItem: index < _ySortedChildren.length ? _ySortedChildren[index] : undefined

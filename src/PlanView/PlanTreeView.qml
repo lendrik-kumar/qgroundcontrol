@@ -330,7 +330,17 @@ TreeView {
             Rectangle {
                 width:  delegateRoot.width
                 height: ScreenTools.implicitComboBoxHeight + ScreenTools.defaultFontPixelWidth
-                color:  qgcPal.windowShade
+                color:  "#050B14" // Deep dark sci-fi background
+                border.color: delegateRoot.expanded ? qgcPal.colorBlue : "transparent"
+                border.width: 1
+
+                // Left tactical bracket
+                Rectangle {
+                    anchors.left: parent.left
+                    width: 4
+                    height: parent.height
+                    color: qgcPal.colorBlue
+                }
 
                 RowLayout {
                     id: groupHeaderRow
@@ -339,29 +349,34 @@ TreeView {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.margins: ScreenTools.defaultFontPixelWidth * 0.5
+                    anchors.leftMargin: ScreenTools.defaultFontPixelWidth
 
                     QGCColoredImage {
                         Layout.alignment: Qt.AlignVCenter
                         Layout.preferredWidth: ScreenTools.defaultFontPixelHeight * 0.75
                         Layout.preferredHeight: Layout.preferredWidth
                         source: "/InstrumentValueIcons/cheveron-right.svg"
-                        color: qgcPal.text
+                        color: qgcPal.colorBlue
                         rotation: delegateRoot.expanded ? 90 : 0
                     }
 
                     QGCLabel {
                         Layout.alignment: Qt.AlignBaseline
-                        text: delegateRoot.nodeObject ? delegateRoot.nodeObject.objectName : ""
+                        text: delegateRoot.nodeObject ? delegateRoot.nodeObject.objectName.toUpperCase() : ""
+                        font.family: ScreenTools.fixedFontFamily
                         font.bold: true
+                        color: qgcPal.colorBlue
                     }
 
                     QGCLabel {
                         Layout.alignment: Qt.AlignBaseline
                         Layout.fillWidth: true
-                        text: root._groupSubtitle(delegateRoot.nodeType)
+                        text: root._groupSubtitle(delegateRoot.nodeType).toUpperCase()
                         elide: Text.ElideRight
                         font.pointSize: ScreenTools.smallFontPointSize
-                        color: qgcPal.colorGrey
+                        font.family: ScreenTools.fixedFontFamily
+                        color: qgcPal.colorBlue
+                        opacity: 0.7
                     }
                 }
 

@@ -9,12 +9,12 @@ ToolIndicatorPage {
     id: root
 
     property real _toolButtonHeight: ScreenTools.defaultFontPixelHeight * 3
+    property real _buttonWidth: ScreenTools.defaultFontPixelWidth * 18
 
     contentComponent: Component {
-        GridLayout {
-            columns: 2
-            columnSpacing: ScreenTools.defaultFontPixelWidth
-            rowSpacing: columnSpacing
+        ColumnLayout {
+            spacing: ScreenTools.defaultFontPixelWidth * 0.5
+            width: root._buttonWidth
 
             SubMenuButton {
                 objectName: "toolbar_viewFly"
@@ -80,7 +80,7 @@ ToolIndicatorPage {
                 implicitHeight: root._toolButtonHeight
                 Layout.fillWidth: true
                 text: qsTr("Settings")
-                imageResource: "/res/QGCLogoWhite.svg"
+                imageResource: "/qmlimages/Gear.svg"
                 visible: !QGroundControl.corePlugin.options.combineSettingsAndSetup
                 onClicked: {
                     if (mainWindow.allowViewSwitch()) {
@@ -88,6 +88,14 @@ ToolIndicatorPage {
                         mainWindow.showSettingsTool()
                     }
                 }
+            }
+
+            // Divider
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: QGroundControl.globalPalette.groupBorder
+                opacity: 0.5
             }
 
             SubMenuButton {
@@ -104,39 +112,43 @@ ToolIndicatorPage {
                 }
             }
 
+            // Version info
             ColumnLayout {
-                id: versionColumnLayout
                 Layout.fillWidth: true
-                Layout.columnSpan: 2
                 spacing: 0
 
                 QGCLabel {
-                    id: versionLabel
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    text: qsTr("%1 Version").arg(QGroundControl.appName)
-                    font.pointSize: ScreenTools.smallFontPointSize
-                    wrapMode: QGCLabel.WordWrap
+                    Layout.fillWidth:       true
+                    horizontalAlignment:    Text.AlignHCenter
+                    text:                   qsTr("%1 Version").arg(QGroundControl.appName)
+                    font.pointSize:         ScreenTools.smallFontPointSize
+                    wrapMode:               QGCLabel.WordWrap
+                    elide:                  Text.ElideNone
+                    color:                  QGroundControl.globalPalette.colorGrey
                 }
 
                 QGCLabel {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    text: QGroundControl.qgcVersion
-                    font.pointSize: ScreenTools.smallFontPointSize
-                    wrapMode: QGCLabel.WrapAnywhere
+                    Layout.fillWidth:       true
+                    horizontalAlignment:    Text.AlignHCenter
+                    text:                   QGroundControl.qgcVersion
+                    font.pointSize:         ScreenTools.smallFontPointSize
+                    wrapMode:               QGCLabel.WrapAnywhere
+                    elide:                  Text.ElideNone
+                    color:                  QGroundControl.globalPalette.colorGrey
                 }
 
                 QGCLabel {
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
-                    text: QGroundControl.qgcAppDate
-                    font.pointSize: ScreenTools.smallFontPointSize
-                    wrapMode: QGCLabel.WrapAnywhere
-                    visible: QGroundControl.qgcDailyBuild
+                    Layout.fillWidth:       true
+                    horizontalAlignment:    Text.AlignHCenter
+                    text:                   QGroundControl.qgcAppDate
+                    font.pointSize:         ScreenTools.smallFontPointSize
+                    wrapMode:               QGCLabel.WrapAnywhere
+                    elide:                  Text.ElideNone
+                    visible:                QGroundControl.qgcDailyBuild
+                    color:                  QGroundControl.globalPalette.colorGrey
 
                     QGCMouseArea {
-                        anchors.topMargin: -(parent.y - versionLabel.y)
+                        anchors.topMargin: -(parent.y - parent.y)
                         anchors.fill: parent
 
                         onClicked: (mouse) => {
@@ -153,7 +165,6 @@ ToolIndicatorPage {
                             }
                         }
 
-                        // This allows you to change this on mobile
                         onPressAndHold: {
                             QGroundControl.corePlugin.showTouchAreas = !QGroundControl.corePlugin.showTouchAreas
                             showTouchAreasNotification.open()

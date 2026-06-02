@@ -119,9 +119,12 @@ Button {
     }
 
     background: Rectangle {
-        id:     buttonBkRect
-        color:  (control.checked || control.pressed) ?
-                    qgcPal.buttonHighlight :
-                    ((control.enabled && control.hovered) ? qgcPal.toolStripHoverColor : "transparent")
+        id:           buttonBkRect
+        // Semi-transparent neon active state preserves icon visibility
+        color:        (control.checked || control.pressed) ?
+                          Qt.rgba(0, 0.85, 1.0, 0.18) :
+                          ((control.enabled && control.hovered) ? qgcPal.toolStripHoverColor : "transparent")
+        border.width: (control.checked || control.pressed) ? 2 : 0
+        border.color: qgcPal.buttonHighlight
     }
 }

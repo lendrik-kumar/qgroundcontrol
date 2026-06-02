@@ -102,10 +102,22 @@ Item {
         anchors.fill:   parent
     }
 
+    // Glassmorphism HUD panel background
     Rectangle {
         anchors.fill:   parent
-        color:          _qgcPal.window
-        opacity:        0.5
+        color:          _qgcPal.windowShade
+        opacity:        0.85
+        border.width:   2
+        border.color:   _qgcPal.buttonHighlight
+    }
+
+    // Inner neon cyan secondary border
+    Rectangle {
+        anchors.fill:   parent
+        color:          "transparent"
+        border.width:   1
+        border.color:   _qgcPal.colorBlue
+        opacity:        0.6
     }
 
     ColumnLayout {
@@ -164,7 +176,7 @@ Item {
                             id:     majorTick
                             width:  _majorTickWidth
                             height: 1
-                            color:  _qgcPal.text
+                            color:  _qgcPal.colorBlue
                         }
 
                         QGCLabel {
@@ -185,8 +197,8 @@ Item {
                         y:          _majorTickPixelHeight / 2 * index +  + _firstTickPixelOffset
                         width:      _minorTickWidth
                         height:     1
-                        color:      _qgcPal.text
-                        opacity:    tickValue < _sliderMinVal || tickValue > _sliderMaxVal ? 0.5 : 1
+                        color:      _qgcPal.colorBlue
+                        opacity:    tickValue < _sliderMinVal || tickValue > _sliderMaxVal ? 0.35 : 0.7
                         visible:    index % 2 === 1
 
                         property real tickValue: _majorTickMaxValue - ((_majorTickValueStep  / 2) * index)
@@ -221,9 +233,9 @@ Item {
 
         onPaint: {
             var ctx = getContext("2d")
-            ctx.strokeStyle = _qgcPal.text
-            ctx.fillStyle = _qgcPal.window
-            ctx.lineWidth = 1
+            ctx.strokeStyle = "#00d8ff"
+            ctx.fillStyle   = _qgcPal.windowShade
+            ctx.lineWidth   = 2
             ctx.beginPath()
             ctx.moveTo(0, indicatorHeight / 2)
             ctx.lineTo(pointerWidth, indicatorHeight / 4)
@@ -254,6 +266,8 @@ Item {
             verticalAlignment:      Text.AlignVCenter
             text:                   _clampedSliderValueString(_sliderValue) + " " + unitsString
             font.pointSize:         ScreenTools.largeFontPointSize
+            font.letterSpacing:     0.8
+            color:                  _qgcPal.colorBlue
 
             property var unitsString: _sliderType === GuidedValueSlider.Speed ?
                                         QGroundControl.unitsConversion.appSettingsSpeedUnitsString :
@@ -295,6 +309,6 @@ Item {
         id:                 mainLayout
         anchors.bottom:     parent.bottom
         spacing:            0
-        width:              200
+        width:              ScreenTools.defaultFontPixelWidth * 20
     }
 }

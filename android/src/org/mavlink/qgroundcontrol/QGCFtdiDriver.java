@@ -65,7 +65,7 @@ final class QGCFtdiDriver {
                 return null;
             }
             return new QGCFtdiDriver(d2xxDevice);
-        } catch (Throwable t) {
+        } catch (Exeption t) {
             QGCLogger.w(TAG, "Failed to open D2XX FTDI device " + device.getDeviceName() + ": " + t.getMessage());
             return null;
         }

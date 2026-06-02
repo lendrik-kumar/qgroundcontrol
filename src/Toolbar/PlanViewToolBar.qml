@@ -22,43 +22,80 @@ Rectangle {
     property real _controllerProgressPct: planMasterController.missionController.progressPct
 
     QGCPalette { id: qgcPal }
+    property real _segmentPadding: ScreenTools.defaultFontPixelWidth * 0.6
+    property real _segmentRadius: ScreenTools.defaultBorderRadius
 
-    /// Bottom single pixel divider
+    Rectangle {
+        anchors.fill: parent
+        color: qgcPal.windowShade
+        border.width: 1
+        border.color: qgcPal.buttonBorder
+        radius: ScreenTools.defaultBorderRadius
+        opacity: 0.95
+    }
+
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         height: 1
-        color: "black"
-        visible: qgcPal.globalTheme === QGCPalette.Light
+        color: qgcPal.buttonBorder
+        opacity: 0.6
     }
 
-    QGCToolBarButton {
-        id: qgcButton
-        objectName: "toolbar_qgcLogo"
-        height: parent.height
-        icon.source: "/res/QGCLogoFull.svg"
-        logo: true
-        onClicked: mainWindow.showToolSelectDialog()
-    }
+    RowLayout {
+        id: toolbarLayout
+        anchors.fill: parent
+        anchors.margins: _segmentPadding
+        spacing: _segmentPadding
 
-    QGCFlickable {
-        id: toolsFlickable
-        anchors.bottomMargin: 1
-        anchors.left: qgcButton.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        contentWidth: toolIndicators.width
-        flickableDirection: Flickable.HorizontalFlick
+        Rectangle {
+            id: leftSegment
+            Layout.fillHeight: true
+            Layout.preferredWidth: qgcButton.width + (ScreenTools.defaultFontPixelWidth * 2)
+            radius: _segmentRadius
+            color: qgcPal.windowShade
+            border.width: 1
+            border.color: qgcPal.buttonBorder
+            opacity: 0.95
 
-        PlanToolBarIndicators {
-            id: toolIndicators
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            planMasterController: _root.planMasterController
-            showRallyPointsHelp: _root.showRallyPointsHelp
-            onToolbarButtonClicked: _root.toolbarButtonClicked()
+            QGCToolBarButton {
+                id: qgcButton
+                objectName: "toolbar_qgcLogo"
+                height: parent.height
+                icon.source: "/res/darshak_logo.png"
+                logo: true
+                anchors.centerIn: parent
+                onClicked: mainWindow.showToolSelectDialog()
+            }
+        }
+
+        Rectangle {
+            id: actionsSegment
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            radius: _segmentRadius
+            color: qgcPal.windowShade
+            border.width: 1
+            border.color: qgcPal.buttonBorder
+            opacity: 0.95
+
+            QGCFlickable {
+                id: toolsFlickable
+                anchors.fill: parent
+                anchors.margins: _segmentPadding
+                contentWidth: toolIndicators.width
+                flickableDirection: Flickable.HorizontalFlick
+
+                PlanToolBarIndicators {
+                    id: toolIndicators
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    planMasterController: _root.planMasterController
+                    showRallyPointsHelp: _root.showRallyPointsHelp
+                    onToolbarButtonClicked: _root.toolbarButtonClicked()
+                }
+            }
         }
     }
 
@@ -71,6 +108,7 @@ Rectangle {
         width: _controllerProgressPct * parent.width
         color: qgcPal.colorGreen
         visible: false
+        z: 2
 
         onVisibleChanged: {
             if (visible) {
@@ -88,6 +126,7 @@ Rectangle {
         height: parent.height
         color: qgcPal.window
         visible: _showLargeProgress
+        z: 3
 
         property bool _userHide: false
         property bool _showLargeProgress: progressBar.visible && !_userHide && qgcPal.globalTheme === QGCPalette.Light

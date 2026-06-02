@@ -18,7 +18,7 @@ Canvas {
     property bool   small:                  !checked
     property bool   child:                  false
     property bool   highlightSelected:      false
-    property var    color:                  checked ? "green" : (child ? qgcPal.mapIndicatorChild : qgcPal.mapIndicator)
+    property var    color:                  checked ? qgcPal.colorGreen : (child ? qgcPal.mapIndicatorChild : qgcPal.mapIndicator)
     property real   anchorPointX:           _height / 2
     property real   anchorPointY:           _height / 2
     property bool   specifiesCoordinate:    true
@@ -39,6 +39,7 @@ Canvas {
     property real   _gimbalRadians:     degreesToRadians(vehicleYaw + gimbalYaw - 90)
     property real   _labelMargin:       2
     property real   _labelRadius:       _indicatorRadius + _labelMargin
+    property color  _labelTextColor:    qgcPal.text
     property string _label:             label.length > 1 ? label : ""
     property string _index:             index === 0 || index === -1 ? label.charAt(0) : (showSequenceNumbers ? index : "")
 
@@ -78,10 +79,21 @@ Canvas {
         anchors.leftMargin:     -((_labelMargin * 2) + indicator.width)
         anchors.rightMargin:    -(_labelMargin * 2)
         anchors.fill:           labelControlLabel
-        color:                  "white"
-        opacity:                0.5
+        color:                  qgcPal.windowShade
+        opacity:                0.85
         radius:                 _labelRadius
         visible:                _label.length !== 0 && !small
+        border.width:           1
+        border.color:           qgcPal.buttonBorder
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            border.width: 1
+            border.color: qgcPal.brandingBlue
+            opacity: 0.25
+        }
     }
 
     QGCLabel {
@@ -92,13 +104,13 @@ Canvas {
         anchors.left:           indicator.right
         anchors.top:            indicator.top
         anchors.bottom:         indicator.bottom
-        color:                  "black"
+        color:                  _labelTextColor
         text:                   _label
         verticalAlignment:      Text.AlignVCenter
         visible:                labelControl.visible
     }
 
-    Rectangle {
+    Item {
         id:                             indicator
         anchors.horizontalCenter:       parent.left
         anchors.verticalCenter:         parent.top
@@ -106,30 +118,53 @@ Canvas {
         anchors.verticalCenterOffset:   anchorPointY
         width:                          _indicatorRadius * 2
         height:                         width
-        color:                          root.color
-        radius:                         _indicatorRadius
+
+        // Rotated Diamond Background
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width * 0.9
+            height: parent.height * 0.9
+            rotation: 45
+            color: "transparent"
+            border.width: 1
+            border.color: root.color
+
+            Rectangle {
+                anchors.fill: parent
+                color: root.color
+                opacity: checked ? 0.7 : 0.25
+            }
+        }
 
         QGCLabel {
             anchors.fill:           parent
             horizontalAlignment:    Text.AlignHCenter
             verticalAlignment:      Text.AlignVCenter
-            color:                  "white"
+            color:                  qgcPal.text
             font.pointSize:         ScreenTools.defaultFontPointSize
+            font.weight:            Font.Bold
             fontSizeMode:           Text.Fit
             text:                   _index
         }
     }
 
-    // Extra circle to indicate selection
+    // Pulsing diamond bracket to indicate selection
     Rectangle {
-        width:          indicator.width * 2
+        width:          indicator.width * 1.5
         height:         width
-        radius:         width * 0.5
-        color:          Qt.rgba(0,0,0,0)
-        border.color:   Qt.rgba(1,1,1,0.5)
-        border.width:   1
+        rotation:       45
+        color:          "transparent"
+        border.color:   root.color
+        border.width:   2
         visible:        checked && highlightSelected
         anchors.centerIn: indicator
+
+        SequentialAnimation on opacity {
+            loops: Animation.Infinite
+            running: checked && highlightSelected
+            NumberAnimation { to: 0.2; duration: 600; easing.type: Easing.InOutSine }
+            NumberAnimation { to: 1.0; duration: 600; easing.type: Easing.InOutSine }
+        }
     }
 
     // The mouse click area is always the size of a normal indicator

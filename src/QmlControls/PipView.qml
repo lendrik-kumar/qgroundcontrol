@@ -14,6 +14,7 @@ Item {
     property var    item2:                  null    // Optional, may come and go
     property string item1IsFullSettingsKey          // Settings key to save whether item1 was saved in full mode
     property bool   show:                   true
+    property bool   _swapping:              false   // Guards against double-tap during 250ms transition
 
     readonly property string _pipExpandedSettingsKey: "IsPIPVisible"
 
@@ -56,6 +57,9 @@ Item {
     }
 
     function _swapPip() {
+        if (_swapping) return   // Block re-entrant taps during animation
+        _swapping = true
+
         var item1IsFull = false
         if (item1.pipState.state === item1.pipState.fullState) {
             item1.pipState.state = item1.pipState.pipState
@@ -71,6 +75,42 @@ Item {
             item1IsFull = true
         }
         QGroundControl.saveBoolGlobalSetting(item1IsFullSettingsKey, item1IsFull)
+
+        // Kick off 250ms spatial swap animation
+        pipSwapAnimation.start()
+    }
+
+    // Spatial swap: scale the PiP widget up while the full item fades
+    // All mutations target scale/opacity only — no layout geometry reflows
+    ParallelAnimation {
+        id: pipSwapAnimation
+        running: false
+
+        // Full item: briefly scale from 0.92 back to 1.0 (settle pulse)
+        SequentialAnimation {
+            NumberAnimation {
+                target:     pipContent
+                property:   "scale"
+                from:       0.88
+                to:         1.0
+                duration:   250
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        // PiP content: blink opacity to signal the swap
+        SequentialAnimation {
+            NumberAnimation {
+                target:     pipContent
+                property:   "opacity"
+                from:       0.0
+                to:         1.0
+                duration:   250
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        onStopped: _swapping = false
     }
 
     function _setPipIsExpanded(isExpanded) {
@@ -100,7 +140,7 @@ Item {
     MouseArea {
         id:             pipMouseArea
         anchors.fill:   parent
-        enabled:        _isExpanded
+        enabled:        _isExpanded && !_root._swapping
         preventStealing: true
         hoverEnabled:   true
         onClicked:      _swapPip()

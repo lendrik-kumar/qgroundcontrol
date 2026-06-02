@@ -12,6 +12,8 @@ ColumnLayout {
     property var  _activeVehicle:       QGroundControl.multiVehicleManager.activeVehicle
     property var  _guidedController:    globals.guidedControllerFlyView
 
+    spacing: ScreenTools.defaultFontPixelHeight / 3
+
     // Pre-defined Additional Guided Actions
     Repeater {
         model: additionalActions.model
@@ -20,6 +22,7 @@ ColumnLayout {
             Layout.fillWidth:   true
             text:               modelData.title
             visible:            modelData.visible
+            primary:            modelData && modelData.isDefault
 
             onClicked: {
                 dropPanel.hide()
@@ -36,6 +39,7 @@ ColumnLayout {
             Layout.fillWidth:   true
             text:               modelData.title
             visible:            modelData.visible
+            primary:            modelData && modelData.isDefault
 
             onClicked: {
                 dropPanel.hide()
@@ -51,6 +55,7 @@ ColumnLayout {
         QGCButton {
             Layout.fillWidth:   true
             text:               object.label
+            primary:            object && object.isDefault
 
             onClicked: {
                 dropPanel.hide()

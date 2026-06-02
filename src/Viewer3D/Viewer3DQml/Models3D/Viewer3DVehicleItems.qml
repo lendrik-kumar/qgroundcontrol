@@ -187,10 +187,13 @@ Node {
         instancingLodMax: 5000
         opacity: 0.8
         pickable: true
-        source: "#Cone"
+        source: "#Sphere"
 
-        materials: DefaultMaterial {
-            diffuseColor: "white"
+        materials: PrincipledMaterial {
+            baseColor: "#00E5FF"
+            emissionColor: "#00E5FF"
+            metalness: 0.9
+            roughness: 0.1
         }
     }
 
@@ -223,9 +226,14 @@ Node {
         instancing: pathInstancing
         instancingLodMax: 8000
         source: "#Cylinder"
+        opacity: 0.65
 
-        materials: DefaultMaterial {
-            diffuseColor: "white"
+        materials: PrincipledMaterial {
+            baseColor: "#00E5FF"
+            emissionColor: "#00E5FF"
+            metalness: 1.0
+            roughness: 0.0
+            opacity: 0.7
         }
     }
 

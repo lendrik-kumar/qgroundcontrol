@@ -9,6 +9,16 @@ import QGroundControl.FlightMap
 ColumnLayout {
     spacing: ScreenTools.defaultFontPixelHeight / 2
 
+    QGCPalette { id: qgcPal }
+
+    Rectangle {
+        Layout.fillWidth: true
+        height: ScreenTools.defaultFontPixelHeight / 4
+        radius: height / 2
+        color: qgcPal.buttonBorder
+        opacity: 0.45
+    }
+
     TerrainProgress {
         Layout.fillWidth: true
     }
@@ -29,5 +39,13 @@ ColumnLayout {
             PhotoVideoControl {
             }
         }
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+        height: ScreenTools.defaultFontPixelHeight / 4
+        radius: height / 2
+        color: qgcPal.buttonBorder
+        opacity: 0.35
     }
 }

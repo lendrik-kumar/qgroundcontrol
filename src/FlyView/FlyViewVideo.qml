@@ -8,6 +8,12 @@ Item {
 
     property Item pipView
     property Item pipState: videoPipState
+    property real _hudLineWidth: Math.max(1, ScreenTools.defaultFontPixelWidth * 0.2)
+    property real _hudBracketLength: ScreenTools.defaultFontPixelHeight * 1.2
+    property real _hudCrosshairSize: ScreenTools.defaultFontPixelHeight * 7
+    property real _hudScanSpacing: ScreenTools.defaultFontPixelHeight * 0.35
+
+    QGCPalette { id: qgcPal }
 
     PipState {
         id:         videoPipState
@@ -45,6 +51,60 @@ Item {
         anchors.fill:   parent
         useSmallFont:   _root.pipState.state !== _root.pipState.fullState
         visible:        QGroundControl.videoManager.isStreamSource || QGroundControl.videoManager.isUvc
+    }
+
+    // Tactical Video HUD Overlay
+    Item {
+        id: tacticalHudOverlay
+        anchors.fill: parent
+        visible: videoStreaming.visible
+
+        // Scanline effect overlay
+        Repeater {
+            model: Math.floor(parent.height / _root._hudScanSpacing)
+            Rectangle {
+                y: index * _root._hudScanSpacing
+                width: parent.width
+                height: _root._hudLineWidth
+                color: qgcPal.brandingBlue
+                opacity: 0.05
+            }
+        }
+
+        // Center Crosshair
+        Item {
+            anchors.centerIn: parent
+            width: _root._hudCrosshairSize
+            height: _root._hudCrosshairSize
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: _root._hudLineWidth
+                height: parent.height
+                color: qgcPal.brandingBlue
+                opacity: 0.4
+            }
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width
+                height: _root._hudLineWidth
+                color: qgcPal.brandingBlue
+                opacity: 0.4
+            }
+
+            // Crosshair brackets
+            Rectangle { anchors.left: parent.left; anchors.top: parent.top; width: _root._hudBracketLength; height: _root._hudLineWidth; color: qgcPal.brandingBlue }
+            Rectangle { anchors.left: parent.left; anchors.top: parent.top; width: _root._hudLineWidth; height: _root._hudBracketLength; color: qgcPal.brandingBlue }
+
+            Rectangle { anchors.right: parent.right; anchors.top: parent.top; width: _root._hudBracketLength; height: _root._hudLineWidth; color: qgcPal.brandingBlue }
+            Rectangle { anchors.right: parent.right; anchors.top: parent.top; width: _root._hudLineWidth; height: _root._hudBracketLength; color: qgcPal.brandingBlue }
+
+            Rectangle { anchors.left: parent.left; anchors.bottom: parent.bottom; width: _root._hudBracketLength; height: _root._hudLineWidth; color: qgcPal.brandingBlue }
+            Rectangle { anchors.left: parent.left; anchors.bottom: parent.bottom; width: _root._hudLineWidth; height: _root._hudBracketLength; color: qgcPal.brandingBlue }
+
+            Rectangle { anchors.right: parent.right; anchors.bottom: parent.bottom; width: _root._hudBracketLength; height: _root._hudLineWidth; color: qgcPal.brandingBlue }
+            Rectangle { anchors.right: parent.right; anchors.bottom: parent.bottom; width: _root._hudLineWidth; height: _root._hudBracketLength; color: qgcPal.brandingBlue }
+        }
     }
 
     QGCLabel {

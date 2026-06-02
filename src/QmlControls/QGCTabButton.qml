@@ -36,11 +36,22 @@ Button {
         id: backRect
         implicitWidth: ScreenTools.implicitButtonWidth
         implicitHeight: ScreenTools.implicitButtonHeight
-        //radius: backRadius
-        border.width: showBorder ? 1 : 0
-        border.color: qgcPal.buttonBorder
-        color: _showHighlight ? qgcPal.buttonHighlight : qgcPal.button
+        // Transparent base — active state shown via bottom neon accent bar
+        color: _showHighlight ? Qt.rgba(0, 0.85, 1.0, 0.10) : (control.enabled && control.hovered ? qgcPal.toolStripHoverColor : qgcPal.button)
+        border.width: 0
 
+        // Neon bottom-border active indicator (modern HUD tab style)
+        Rectangle {
+            anchors.left:   parent.left
+            anchors.right:  parent.right
+            anchors.bottom: parent.bottom
+            height:         2
+            color:          qgcPal.colorBlue
+            visible:        control.checked
+            opacity:        0.9
+        }
+
+        // Subtle right separator between inactive tabs
         Rectangle {
             anchors.right: parent.right
             anchors.top: parent.top
@@ -79,7 +90,8 @@ Button {
             text: control.text
             font.pointSize: control.pointSize
             font.family: ScreenTools.normalFontFamily
-            color: _showHighlight ? qgcPal.buttonHighlightText : qgcPal.buttonText
+            font.letterSpacing: 0.5
+            color: _showHighlight ? qgcPal.colorBlue : qgcPal.buttonText
             visible: !_showIcon
         }
     }

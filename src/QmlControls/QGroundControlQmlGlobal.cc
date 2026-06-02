@@ -352,5 +352,3 @@ QString QGroundControlQmlGlobal::appName()
 {
     return QCoreApplication::applicationName();
 }
-
-

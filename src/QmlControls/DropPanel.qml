@@ -64,7 +64,20 @@ Popup {
             radius: ScreenTools.defaultFontPixelHeight / 2
             width:  parent.implicitWidth - _arrowPointWidth
             height: parent.implicitHeight
-            color:  _qgcPal.window
+            color:  _qgcPal.windowShade
+            border.width: 1
+            border.color: _qgcPal.buttonBorder
+        }
+
+        Rectangle {
+            x:      _dropRight ? _arrowPointWidth : 0
+            radius: ScreenTools.defaultFontPixelHeight / 2
+            width:  parent.implicitWidth - _arrowPointWidth
+            height: parent.implicitHeight
+            color:  "transparent"
+            border.width: 1
+            border.color: _qgcPal.brandingBlue
+            opacity: 0.35
         }
 
         // Arrowhead
@@ -82,8 +95,29 @@ Popup {
                 context.lineTo(_dropRight ? _arrowPointWidth : 0, 0)
                 context.lineTo(_dropRight ? _arrowPointWidth : 0, _arrowPointWidth * 2)
                 context.closePath()
-                context.fillStyle = _qgcPal.window
+                context.fillStyle = _qgcPal.windowShade
                 context.fill()
+            }
+        }
+
+        Canvas {
+            x:      _dropRight ? 0 : parent.width - _arrowPointWidth
+            y:      _arrowPointPositionY - _arrowPointWidth
+            width:  _arrowPointWidth
+            height: _arrowPointWidth * 2
+
+            onPaint: {
+                var context = getContext("2d")
+                context.reset()
+                context.beginPath()
+                context.moveTo(_dropRight ? 0 : _arrowPointWidth, _arrowPointWidth)
+                context.lineTo(_dropRight ? _arrowPointWidth : 0, 0)
+                context.lineTo(_dropRight ? _arrowPointWidth : 0, _arrowPointWidth * 2)
+                context.closePath()
+                context.strokeStyle = _qgcPal.brandingBlue
+                context.lineWidth = 1
+                context.globalAlpha = 0.45
+                context.stroke()
             }
         }
     }

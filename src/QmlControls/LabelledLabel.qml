@@ -14,7 +14,6 @@ RowLayout {
     QGCLabel {
         id:                  _labelLabel
         Layout.fillWidth:    true
-        Layout.minimumWidth: implicitWidth
     }
 
     QGCLabel {

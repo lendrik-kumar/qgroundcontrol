@@ -70,7 +70,12 @@ QString ScreenToolsController::normalFontFamily()
         return QStringLiteral("NanumGothic");
     }
 
-    return QStringLiteral("Open Sans");
+    // Prefer Inter for its superior readability at small sizes in technical UIs.
+    // Falls back to Open Sans if Inter was not loaded from the QRC bundle.
+    if (QFontDatabase::hasFamily(QStringLiteral("Inter"))) {
+        return QStringLiteral("Inter");
+    }
+    return QFontDatabase::hasFamily(QStringLiteral("Open Sans")) ? QStringLiteral("Open Sans") : QStringLiteral("Oxanium");
 }
 
 double ScreenToolsController::defaultFontDescent(int pointSize)

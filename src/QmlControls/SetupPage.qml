@@ -43,6 +43,17 @@ Item {
     property string _disableReason:         _disableDueToArmed ? qsTr("armed") : qsTr("flying")
     property real   _margins:               ScreenTools.defaultFontPixelHeight * 0.5
 
+    QGCPalette { id: qgcPal; colorGroupEnabled: setupView.enabled }
+
+    Rectangle {
+        anchors.fill: parent
+        color: qgcPal.windowShade
+        opacity: 0.18
+        radius: ScreenTools.defaultBorderRadius
+        border.width: 1
+        border.color: qgcPal.buttonBorder
+    }
+
     Component.onCompleted: {
         if(pageLoader.item && pageLoader.item.setupPageCompleted) {
             pageLoader.item.setupPageCompleted()

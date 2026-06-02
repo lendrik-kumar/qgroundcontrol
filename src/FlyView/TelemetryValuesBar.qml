@@ -10,18 +10,52 @@ Item {
     implicitHeight: mainLayout.height + (_toolsMargin * 2)
 
     property real extraWidth: 0 ///< Extra width to add to the background rectangle
+    property real _toolsMargin: ScreenTools.defaultFontPixelHeight * 0.5
+    property real _accentWidth: Math.max(1, ScreenTools.defaultFontPixelWidth * 0.3)
+    property real _accentLength: ScreenTools.defaultFontPixelHeight * 1.2
 
     property alias factValueGrid:           factValueGrid
     property alias settingsGroup:           factValueGrid.settingsGroup
     property alias specificVehicleForCard:  factValueGrid.specificVehicleForCard
 
+    QGCPalette { id: qgcPal }
+
     Rectangle {
         id:         backgroundRect
         width:      control.width + extraWidth
         height:     control.height
-        color:      qgcPal.window
-        radius:     ScreenTools.defaultFontPixelWidth / 2
-        opacity:    0.75
+        color:      qgcPal.windowShade
+        radius:     ScreenTools.defaultBorderRadius
+        opacity:    0.90
+        clip:       true
+
+        // Main HUD container border
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            border.width: 1
+            border.color: qgcPal.colorBlue
+            opacity: 0.6
+        }
+
+        // Left accent bar
+        Rectangle {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: _accentWidth
+            color: qgcPal.colorBlue
+        }
+
+        // Diagonal cut / sci-fi styling accent
+        Rectangle {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            width: _accentLength
+            height: _accentWidth
+            color: qgcPal.colorBlue
+        }
     }
 
     ColumnLayout {
@@ -39,7 +73,7 @@ Item {
                 width:              ScreenTools.minTouchPixels * 0.75
                 height:             width
                 sourceSize.width:   width
-                color:              qgcPal.text
+                color:              qgcPal.colorBlue
                 fillMode:           Image.PreserveAspectFit
 
                 QGCMouseArea {

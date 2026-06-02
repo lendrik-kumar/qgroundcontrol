@@ -488,12 +488,13 @@ SetupPage {
                     elide:              Text.ElideRight
                 }
 
-                QGCButton {
+                TacticalConfirmButton {
                     id:         flashButton
-                    text:       qsTr("Flash")
+                    text:       qsTr("Swipe to Flash")
                     visible:    !_flashStarted
                     enabled:    portCombo.currentIndex >= 0 && controller.availablePorts.length > 0
-                    onClicked: {
+                    
+                    onConfirm: {
                         var ports = controller.availablePorts
                         if (portCombo.currentIndex < 0 || portCombo.currentIndex >= ports.length) {
                             return

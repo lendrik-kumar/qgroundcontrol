@@ -151,7 +151,7 @@ Rectangle {
 
     ColumnLayout {
         id:                 leftPanel
-        width:              Math.max(buttonColumn.implicitWidth + _horizontalMargin, ScreenTools.defaultFontPixelWidth * 22)
+        width:              settingsView.width * 0.22
         anchors.topMargin:  _verticalMargin
         anchors.top:        parent.top
         anchors.bottom:     parent.bottom
@@ -180,6 +180,7 @@ Rectangle {
 
         ColumnLayout {
             id:         buttonColumn
+            width:      parent.width
             spacing:    0
 
             Repeater {
@@ -296,13 +297,14 @@ Rectangle {
                                 if (typeof rightPanel.item.sectionVisible !== "function") return true
                                 return rightPanel.item.sectionVisible(sectionIndex)
                             }
-                            property color textColor: sectionChecked || pressed ? qgcPal.buttonHighlightText : qgcPal.buttonText
+                            property color textColor: sectionChecked || pressed ? qgcPal.colorBlue : qgcPal.buttonText
                             visible: sectionMatchesSearch && sectionContentVisible
 
                             background: Rectangle {
-                                color:   qgcPal.buttonHighlight
-                                opacity: sectionBtn.sectionChecked || sectionBtn.pressed ? 1 : sectionBtn.enabled && sectionBtn.hovered ? 0.2 : 0
-                                radius:  ScreenTools.defaultFontPixelWidth / 2
+                                color:   sectionBtn.sectionChecked || sectionBtn.pressed ? Qt.rgba(0.42, 0.74, 0.85, 0.18) : (sectionBtn.enabled && sectionBtn.hovered ? Qt.rgba(0.42, 0.74, 0.85, 0.07) : "transparent")
+                                border.color: sectionBtn.sectionChecked || sectionBtn.pressed ? qgcPal.colorBlue : "transparent"
+                                border.width: 1
+                                radius:  2
                             }
 
                             contentItem: QGCLabel {
@@ -310,6 +312,7 @@ Rectangle {
                                 color: sectionBtn.textColor
                                 font.pointSize: ScreenTools.defaultFontPointSize * 0.9
                                 horizontalAlignment: Text.AlignLeft
+                                elide: Text.ElideRight
                             }
 
                             onClicked: {
@@ -349,5 +352,20 @@ Rectangle {
         anchors.right:          parent.right
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
+
+        // Slide-and-fade transition for settings sections
+        opacity: status === Loader.Ready ? 1.0 : 0.0
+        transform: Translate {
+            id: panelTranslate
+            x: rightPanel.status === Loader.Ready ? 0 : 30
+        }
+
+        Behavior on opacity {
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
+
+        Behavior on transform {
+            NumberAnimation { target: panelTranslate; property: "x"; duration: 250; easing.type: Easing.OutCubic }
+        }
     }
 }

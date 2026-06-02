@@ -94,7 +94,9 @@ qt_add_qml_module(QGroundControlControlsModule
         APMSubMotorDisplay.qml
         AutotuneUI.qml
         AxisMonitor.qml
+        CalibrationStepBanner.qml
         ClickableColor.qml
+        CinematicSectionHeader.qml
         ConfigButton.qml
         ConfigSection.qml
         DeadMouseArea.qml
@@ -118,6 +120,7 @@ qt_add_qml_module(QGroundControlControlsModule
         LabelledLabel.qml
         LogReplayStatusBar.qml
         MissionCommandDialog.qml
+        MetricTile.qml
         MvPanelPage.qml
         OfflineMapButton.qml
         ParameterDiffDialog.qml
@@ -174,6 +177,10 @@ qt_add_qml_module(QGroundControlControlsModule
         SetupPage.qml
         SliderSwitch.qml
         SubMenuButton.qml
+        TacticalConfirmButton.qml
+        TacticalDialogFrame.qml
+        TacticalDrawer.qml
+        TacticalPanelFrame.qml
         TimedProgressTracker.qml
         ToolIndicatorPage.qml
         ToolStrip.qml

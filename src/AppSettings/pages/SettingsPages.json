@@ -5,14 +5,48 @@
         {
             "name": "General",
             "qml": "GeneralSettings.qml",
-            "icon": "qrc:/res/QGCLogoWhite.svg",
+            "icon": "qrc:/qmlimages/Gear.svg",
             "pageDefinition": "General.SettingsUI.json"
+        },
+        {
+            "name": "Comm Links",
+            "qml": "CommLinksSettings.qml",
+            "icon": "qrc:/InstrumentValueIcons/usb.svg",
+            "pageDefinition": "CommLinks.SettingsUI.json"
+        },
+        {
+            "name": "Video",
+            "qml": "VideoSettings.qml",
+            "icon": "qrc:/InstrumentValueIcons/camera.svg",
+            "pageDefinition": "Video.SettingsUI.json",
+            "visible": "QGroundControl.settingsManager.videoSettings.userVisible"
+        },
+        {
+            "name": "Maps",
+            "qml": "MapsSettings.qml",
+            "icon": "qrc:/InstrumentValueIcons/globe.svg",
+            "pageDefinition": "Maps.SettingsUI.json"
+        },
+        {
+            "name": "Telemetry",
+            "qml": "TelemetrySettings.qml",
+            "icon": "qrc:/InstrumentValueIcons/drone.svg",
+            "pageDefinition": "Telemetry.SettingsUI.json"
+        },
+        {
+            "divider": true
         },
         {
             "name": "Fly View",
             "qml": "FlyViewSettings.qml",
             "icon": "qrc:/qmlimages/PaperPlane.svg",
             "pageDefinition": "FlyView.SettingsUI.json"
+        },
+        {
+            "name": "Plan View",
+            "qml": "PlanViewSettings.qml",
+            "icon": "qrc:/qmlimages/Plan.svg",
+            "pageDefinition": "PlanView.SettingsUI.json"
         },
         {
             "name": "3D View",
@@ -22,13 +56,13 @@
             "visible": "QGroundControl.settingsManager.viewer3DSettings.userVisible"
         },
         {
-            "name": "Plan View",
-            "qml": "PlanViewSettings.qml",
-            "icon": "qrc:/qmlimages/Plan.svg",
-            "pageDefinition": "PlanView.SettingsUI.json"
+            "divider": true
         },
         {
-            "divider": true
+            "name": "Remote ID",
+            "qml": "RemoteIDSettings.qml",
+            "icon": "qrc:/qmlimages/RidIconManNoID.svg",
+            "pageDefinition": "RemoteID.SettingsUI.json"
         },
         {
             "name": "ADSB Server",
@@ -37,10 +71,14 @@
             "pageDefinition": "ADSBVehicleManager.SettingsUI.json"
         },
         {
-            "name": "Comm Links",
-            "qml": "CommLinksSettings.qml",
-            "icon": "qrc:/InstrumentValueIcons/usb.svg",
-            "pageDefinition": "CommLinks.SettingsUI.json"
+            "name": "NTRIP/RTK",
+            "qml": "NTRIPSettings.qml",
+            "icon": "qrc:/InstrumentValueIcons/globe.svg",
+            "visible": "QGroundControl.settingsManager && QGroundControl.settingsManager.ntripSettings !== undefined",
+            "pageDefinition": "NTRIP.SettingsUI.json"
+        },
+        {
+            "divider": true
         },
         {
             "name": "Logging",
@@ -54,43 +92,11 @@
             "icon": "qrc:/InstrumentValueIcons/conversation.svg"
         },
         {
-            "name": "Maps",
-            "qml": "MapsSettings.qml",
-            "icon": "qrc:/InstrumentValueIcons/globe.svg",
-            "pageDefinition": "Maps.SettingsUI.json"
-        },
-        {
-            "name": "NTRIP/RTK",
-            "qml": "NTRIPSettings.qml",
-            "icon": "qrc:/InstrumentValueIcons/globe.svg",
-            "visible": "QGroundControl.settingsManager && QGroundControl.settingsManager.ntripSettings !== undefined",
-            "pageDefinition": "NTRIP.SettingsUI.json"
-        },
-        {
             "name": "PX4 Log Transfer",
             "qml": "PX4LogTransferSettings.qml",
             "icon": "qrc:/InstrumentValueIcons/inbox-download.svg",
             "visible": "QGroundControl.corePlugin.options.showPX4LogTransferOptions && QGroundControl.px4ProFirmwareSupported && (QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle.px4Firmware : true)",
             "pageDefinition": "PX4LogTransfer.SettingsUI.json"
-        },
-        {
-            "name": "Remote ID",
-            "qml": "RemoteIDSettings.qml",
-            "icon": "qrc:/qmlimages/RidIconManNoID.svg",
-            "pageDefinition": "RemoteID.SettingsUI.json"
-        },
-        {
-            "name": "Telemetry",
-            "qml": "TelemetrySettings.qml",
-            "icon": "qrc:/InstrumentValueIcons/drone.svg",
-            "pageDefinition": "Telemetry.SettingsUI.json"
-        },
-        {
-            "name": "Video",
-            "qml": "VideoSettings.qml",
-            "icon": "qrc:/InstrumentValueIcons/camera.svg",
-            "pageDefinition": "Video.SettingsUI.json",
-            "visible": "QGroundControl.settingsManager.videoSettings.userVisible"
         },
         {
             "divider": true
@@ -113,12 +119,6 @@
             "name": "Debug",
             "qml": "DebugWindow.qml",
             "icon": "qrc:/InstrumentValueIcons/bug.svg",
-            "visible": "ScreenTools.isDebug"
-        },
-        {
-            "name": "Palette Test",
-            "qml": "QmlTest.qml",
-            "icon": "qrc:/InstrumentValueIcons/photo.svg",
             "visible": "ScreenTools.isDebug"
         }
     ]

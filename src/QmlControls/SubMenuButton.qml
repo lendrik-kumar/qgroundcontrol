@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import QGroundControl
 import QGroundControl.Controls
@@ -14,15 +15,15 @@ Button {
     hoverEnabled:   !ScreenTools.isMobile
     implicitHeight: ScreenTools.defaultFontPixelHeight * 2.5
 
-    property bool   setupComplete:  true                                    ///< true: setup complete indicator shows as completed
+    property bool   setupComplete:  true
     property var    imageColor:     undefined
-    property string imageResource:  "/qmlimages/subMenuButtonImage.png"     ///< Button image
+    property string imageResource:  "/qmlimages/subMenuButtonImage.png"
     property bool   largeSize:      false
     property bool   showHighlight:  control.pressed | control.checked
 
-    property size   sourceSize:     Qt.size(ScreenTools.defaultFontPixelHeight * 2, ScreenTools.defaultFontPixelHeight * 2)
+    property size   sourceSize:     Qt.size(ScreenTools.defaultFontPixelHeight * 1.5, ScreenTools.defaultFontPixelHeight * 1.5)
 
-    property ButtonGroup buttonGroup:    null
+    property ButtonGroup buttonGroup: null
     onButtonGroupChanged: {
         if (buttonGroup) {
             buttonGroup.addButton(control)
@@ -37,41 +38,42 @@ Button {
     }
 
     background: Rectangle {
-        id:     innerRect
-        color:  qgcPal.windowShade
-
-        implicitWidth: titleBar.x + titleBar.contentWidth + ScreenTools.defaultFontPixelWidth
+        color:        qgcPal.windowShade
+        border.width: 1
+        border.color: showHighlight ? qgcPal.buttonHighlight : qgcPal.buttonBorder
+        radius:       2
 
         Rectangle {
             anchors.fill:   parent
             color:          qgcPal.buttonHighlight
-            opacity:        showHighlight ? 1 : control.enabled && control.hovered ? .2 : 0
+            opacity:        showHighlight ? 0.22 : control.enabled && control.hovered ? .1 : 0
+            radius:         parent.radius
         }
+    }
+
+    contentItem: RowLayout {
+        spacing: ScreenTools.defaultFontPixelWidth * 0.75
 
         QGCColoredImage {
             id:                     image
-            anchors.leftMargin:     ScreenTools.defaultFontPixelWidth
-            anchors.left:           parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            width:                  ScreenTools.defaultFontPixelHeight * 2
-            height:                 ScreenTools.defaultFontPixelHeight * 2
+            Layout.preferredWidth:  ScreenTools.defaultFontPixelHeight * 1.5
+            Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.5
+            Layout.alignment:       Qt.AlignVCenter
             fillMode:               Image.PreserveAspectFit
             mipmap:                 true
-            color:                  imageColor ? imageColor : (control.setupComplete ? titleBar.color : "red")
+            color:                  imageColor ? imageColor : (control.setupComplete ? titleBar.color : qgcPal.colorRed)
             source:                 control.imageResource
             sourceSize:             control.sourceSize
         }
 
         QGCLabel {
-            id:                     titleBar
-            anchors.leftMargin:     ScreenTools.defaultFontPixelWidth
-            anchors.left:           image.right
-            anchors.verticalCenter: parent.verticalCenter
-            verticalAlignment:      TextEdit.AlignVCenter
-            color:                  showHighlight ? qgcPal.buttonHighlightText : qgcPal.buttonText
-            text:                   control.text
+            id:                 titleBar
+            Layout.fillWidth:   true
+            Layout.alignment:   Qt.AlignVCenter
+            color:              showHighlight ? qgcPal.buttonHighlightText : qgcPal.buttonText
+            text:               control.text
+            elide:              Text.ElideRight
+            font.letterSpacing: 0.4
         }
     }
-
-    contentItem: Item {}
 }

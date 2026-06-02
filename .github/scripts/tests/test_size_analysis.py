@@ -70,5 +70,3 @@ def test_generate_metrics_json_with_explicit_values(tmp_path: Path) -> None:
     assert metrics[0]["value"] == 4
     assert metrics[1]["value"] == 3
     assert metrics[2]["value"] == 42
-
-

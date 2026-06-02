@@ -11,10 +11,13 @@ Rectangle {
     id:             topRightPanel
     width:          contentWidth
     height:         Math.max(contentHeight, minimumHeight)
-    color:          qgcPal.toolbarBackground
-    radius:         ScreenTools.defaultFontPixelHeight / 2
+    color:          qgcPal.windowShade
+    radius:         0
     visible:        !QGroundControl.videoManager.fullScreen && _multipleVehicles && _settingEnableMVPanel
     clip:           true
+    border.width:   2
+    border.color:   qgcPal.buttonHighlight
+    opacity:        0.80
 
     property bool _settingEnableMVPanel:    QGroundControl.settingsManager.appSettings.enableMultiVehiclePanel.value
     property bool  _multipleVehicles:       QGroundControl.multiVehicleManager.vehicles.count > 1
@@ -32,6 +35,15 @@ Rectangle {
     property real  maximumHeight
 
     QGCPalette { id: qgcPal }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: 0
+        color: "transparent"
+        border.width: 2
+        border.color: qgcPal.colorBlue
+        opacity: 0.7
+    }
 
     DeadMouseArea {
         anchors.fill:       parent
@@ -80,6 +92,26 @@ Rectangle {
                 }
             }
 
+        }
+
+        // ── Kinetic PFD Tape Ladders ─────────────────────────────────────
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: ScreenTools.defaultFontPixelWidth * 0.5
+            visible: QGroundControl.multiVehicleManager.activeVehicle !== null // Only show when connected
+
+            SpeedTapeLadder {
+                Layout.alignment: Qt.AlignLeft
+            }
+
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            } // Spacer
+
+            AltitudeTapeLadder {
+                Layout.alignment: Qt.AlignRight
+            }
         }
 
         Rectangle {

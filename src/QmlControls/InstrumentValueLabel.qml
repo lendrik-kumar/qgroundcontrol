@@ -57,6 +57,7 @@ ColumnLayout {
         Layout.alignment:   Qt.AlignVCenter
         height:             _tightHeight
         font.pointSize:     ScreenTools.smallFontPointSize
+        font.letterSpacing: 0.5
         text:               instrumentValueData.text
         color:              _color
         opacity:            instrumentValueData.currentOpacity

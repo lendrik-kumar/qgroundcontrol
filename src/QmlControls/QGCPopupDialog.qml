@@ -41,6 +41,18 @@ Popup {
     focus:              true
     margins:            0
 
+    enter: Transition {
+        ParallelAnimation {
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+        }
+    }
+
+    exit: Transition {
+        ParallelAnimation {
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 250; easing.type: Easing.OutCubic }
+        }
+    }
+
     default property alias dialogContent: dialogContentParent.data
 
     property string title
@@ -50,6 +62,7 @@ Popup {
     property var    dialogProperties
     property bool   destroyOnClose:         true
     property bool   preventClose:           false
+    property bool   criticalAlert:          false // Darshak Failsafe Mode
 
     property real maxContentAvailableWidth:    mainWindow.width - _contentMargin * 6
     property real maxContentAvailableHeight:   mainWindow.height - titleRowLayout.height - _contentMargin * 7
@@ -69,6 +82,12 @@ Popup {
     background: QGCMouseArea {
         width:  mainWindow.width
         height: mainWindow.height
+
+        Rectangle {
+            anchors.fill: parent
+            color: _qgcPal.window
+            opacity: 0.85 // Darker tactical overlay backdrop
+        }
 
         onClicked: {
             if (closePolicy & Popup.CloseOnPressOutside) {
@@ -199,14 +218,32 @@ Popup {
     }
 
     Rectangle {
+        id:             popupBorderBase
         x:              mainLayout.x - _contentMargin
         y:              mainLayout.y - _contentMargin
         width:          mainLayout.width + _contentMargin * 2
         height:         mainLayout.height + _contentMargin * 2
         color:          _qgcPal.windowShade
-        radius:         root.padding / 2
-        border.width:   1
-        border.color:   _qgcPal.windowShadeLight
+        radius:         0 // Sharp tactical edges
+        border.width:   root.criticalAlert ? 2 : 1
+        border.color:   root.criticalAlert ? "#FF1744" : _qgcPal.colorOrange
+        opacity:        0.95
+
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            border.width: root.criticalAlert ? 2 : 1
+            border.color: root.criticalAlert ? "#FF1744" : _qgcPal.colorOrange
+            opacity: 0.35
+            
+            SequentialAnimation on opacity {
+                loops: Animation.Infinite
+                running: root.opened && root.criticalAlert
+                NumberAnimation { to: 1.0; duration: 600; easing.type: Easing.InOutSine }
+                NumberAnimation { to: 0.2; duration: 600; easing.type: Easing.InOutSine }
+            }
+        }
     }
 
     ColumnLayout {
@@ -248,6 +285,8 @@ Popup {
             Layout.preferredWidth:  Math.min(maxAvailableWidth, totalContentWidth)
             Layout.preferredHeight: Math.min(maxAvailableHeight, totalContentHeight)
             color:                  _qgcPal.window
+            border.width:           1
+            border.color:           _qgcPal.buttonBorder
 
             property real totalContentWidth:    dialogContentParent.childrenRect.width + _contentMargin * 2
             property real totalContentHeight:   dialogContentParent.childrenRect.height + _contentMargin * 2

@@ -63,7 +63,7 @@ Rectangle {
 
     QGCFlickable {
         id:                 buttonScroll
-        width:              buttonColumn.width
+        width:              _root.width * 0.22
         anchors.topMargin:  _defaultTextHeight / 2
         anchors.top:        parent.top
         anchors.bottom:     parent.bottom
@@ -139,6 +139,21 @@ Rectangle {
         anchors.right:          parent.right
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
+
+        // Fluid slide-and-fade transitions for incoming analyze pages
+        opacity: _currentItem ? 1.0 : 0.0
+        transform: Translate {
+            id: panelTranslate
+            x: _currentItem ? 0 : 30
+        }
+
+        Behavior on opacity {
+            NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+        }
+
+        Behavior on transform {
+            NumberAnimation { target: panelTranslate; property: "x"; duration: 250; easing.type: Easing.OutCubic }
+        }
 
         property string title
 
