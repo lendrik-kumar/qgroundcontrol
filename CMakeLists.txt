@@ -212,6 +212,7 @@ find_package(Qt6
         QmlIntegration
         Quick
         QuickControls2
+        QuickEffects
         QuickVectorImage
         QuickWidgets
         Sensors

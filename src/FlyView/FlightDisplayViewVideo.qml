@@ -62,7 +62,8 @@ Item {
                 id:                 noVideoLabel
                 text:               QGroundControl.settingsManager.videoSettings.streamEnabled.rawValue ? qsTr("WAITING FOR VIDEO") : qsTr("VIDEO DISABLED")
                 font.bold:          true
-                color:              "white"
+                color:              TacticalTheme.primary
+                font.family:        ScreenTools.tacticalFontFamily
                 font.pointSize:     useSmallFont ? ScreenTools.smallFontPointSize : ScreenTools.largeFontPointSize
                 anchors.centerIn:   parent
             }
@@ -137,25 +138,29 @@ Item {
                 visible:        _showGrid && !QGroundControl.videoManager.fullScreen
 
                 Rectangle {
-                    color:  Qt.rgba(1,1,1,0.5)
+                    color:  TacticalTheme.primary
+                    opacity: 0.3
                     height: parent.height
                     width:  1
                     x:      parent.width * 0.33
                 }
                 Rectangle {
-                    color:  Qt.rgba(1,1,1,0.5)
+                    color:  TacticalTheme.primary
+                    opacity: 0.3
                     height: parent.height
                     width:  1
                     x:      parent.width * 0.66
                 }
                 Rectangle {
-                    color:  Qt.rgba(1,1,1,0.5)
+                    color:  TacticalTheme.primary
+                    opacity: 0.3
                     width:  parent.width
                     height: 1
                     y:      parent.height * 0.33
                 }
                 Rectangle {
-                    color:  Qt.rgba(1,1,1,0.5)
+                    color:  TacticalTheme.primary
+                    opacity: 0.3
                     width:  parent.width
                     height: 1
                     y:      parent.height * 0.66

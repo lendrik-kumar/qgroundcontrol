@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts
+import QtQuick.Effects
 import QtQuick.Window
 
 import QGroundControl
@@ -125,32 +126,40 @@ ApplicationWindow {
         return allowed
     }
 
+    // Tracks which view is currently visible (for sidebar active state)
+    property string _activeView: "fly"
+
     function showPlanView() {
-        flyView.visible = false
-        planView.visible = true
-        toolDrawer.visible = false
+        flyView.visible     = false
+        planView.visible    = true
+        toolDrawer.visible  = false
+        _activeView         = "plan"
     }
 
     function showFlyView() {
-        flyView.visible = true
-        planView.visible = false
-        toolDrawer.visible = false
+        flyView.visible     = true
+        planView.visible    = false
+        toolDrawer.visible  = false
+        _activeView         = "fly"
     }
 
-    function showTool(toolTitle, toolSource, toolIcon) {
+    function showTool(toolTitle, toolSource, toolIcon, viewId) {
         toolDrawer.backIcon     = flyView.visible ? "/qmlimages/PaperPlane.svg" : "/qmlimages/Plan.svg"
         toolDrawer.toolTitle    = toolTitle
         toolDrawer.toolSource   = toolSource
         toolDrawer.toolIcon     = toolIcon
         toolDrawer.visible      = true
+        flyView.visible         = false
+        planView.visible        = false
+        _activeView             = viewId || "configure"
     }
 
     function showAnalyzeTool() {
-        showTool(qsTr("Analyze Tools"), "qrc:/qml/QGroundControl/AnalyzeView/AnalyzeView.qml", "/qmlimages/Analyze.svg")
+        showTool(qsTr("Analyze Tools"), "qrc:/qml/QGroundControl/AnalyzeView/AnalyzeView.qml", "/qmlimages/Analyze.svg", "analyze")
     }
 
     function showVehicleConfig() {
-        showTool(qsTr("Vehicle Configuration"), "qrc:/qml/QGroundControl/VehicleSetup/VehicleConfigView.qml", "/qmlimages/Gears.svg")
+        showTool(qsTr("Vehicle Configuration"), "qrc:/qml/QGroundControl/VehicleSetup/VehicleConfigView.qml", "/qmlimages/Gears.svg", "configure")
     }
 
     function showVehicleConfigParametersPage() {
@@ -167,7 +176,7 @@ ApplicationWindow {
     }
 
     function showSettingsTool(settingsPage = "") {
-        showTool(qsTr("Application Settings"), "qrc:/qml/QGroundControl/Controls/AppSettings.qml", "/res/QGCLogoWhite")
+        showTool(qsTr("Application Settings"), "qrc:/qml/QGroundControl/Controls/AppSettings.qml", "/res/QGCLogoWhite", "settings")
         if (settingsPage !== "") {
             toolDrawerLoader.item.showSettingsPage(settingsPage)
         }
@@ -280,21 +289,54 @@ ApplicationWindow {
     }
 
     background: Rectangle {
-        anchors.fill:   parent
-        color:          QGroundControl.globalPalette.window
+        anchors.fill: parent
+        color:        "#0F1419"   // Aero-Tactical void black
     }
 
-    FlyView {
-        id:                     flyView
-        objectName:             "mainView_fly"
-        anchors.fill:           parent
-    }
+    // ── Aero-Tactical Shell Layout ────────────────────────────────────────────
+    // Sidebar (left, persistent) + Content area (right, fills remaining space)
+    Row {
+        id:           shellLayout
+        anchors.fill: parent
 
-    PlanView {
-        id:             planView
-        objectName:     "mainView_plan"
-        anchors.fill:   parent
-        visible:        false
+        // ── Left: Persistent Navigation Sidebar ──────────────────────────────
+        TacticalSidebar {
+            id:           _sidebar
+            height:       parent.height
+            activeView:   mainWindow._activeView
+            collapsed:    ScreenTools.isShortScreen || ScreenTools.isTinyScreen
+
+            onViewRequested: (view) => {
+                if (!mainWindow.allowViewSwitch()) return
+                switch (view) {
+                    case "fly":       mainWindow.showFlyView();       break
+                    case "plan":      mainWindow.showPlanView();      break
+                    case "analyze":   mainWindow.showAnalyzeTool();   break
+                    case "configure": mainWindow.showVehicleConfig(); break
+                    case "settings":  mainWindow.showSettingsTool();  break
+                }
+            }
+        }
+
+        // ── Right: Main Content Area ──────────────────────────────────────────
+        Item {
+            id:     _contentArea
+            width:  parent.width - _sidebar.width
+            height: parent.height
+
+            FlyView {
+                id:          flyView
+                objectName:  "mainView_fly"
+                anchors.fill: parent
+            }
+
+            PlanView {
+                id:           planView
+                objectName:   "mainView_plan"
+                anchors.fill: parent
+                visible:      false
+            }
+        }
     }
 
     footer: LogReplayStatusBar {
@@ -365,17 +407,23 @@ ApplicationWindow {
         }
     }
 
+    // ── Tool Drawer (Configure / Analyze / Settings) ──────────────────────────
+    // Positioned inside the content area beside the sidebar
     Rectangle {
         id:             toolDrawer
         objectName:     "mainView_toolDrawer"
-        anchors.fill:   parent
+        // Offset from sidebar; fill the content area
+        x:              _sidebar.width
+        y:              0
+        width:          parent.width - _sidebar.width
+        height:         parent.height
         visible:        false
-        color:          qgcPal.window
+        color:          "#0F1419"   // Deep space bg
 
-        property var backIcon
+        property var    backIcon
         property string toolTitle
-        property alias toolSource:  toolDrawerLoader.source
-        property var toolIcon
+        property alias  toolSource: toolDrawerLoader.source
+        property var    toolIcon
 
         onVisibleChanged: {
             if (!toolDrawer.visible) {
@@ -383,40 +431,49 @@ ApplicationWindow {
             }
         }
 
-        // This need to block click event leakage to underlying map.
+        // Block click event leakage to underlying map
         DeadMouseArea {
             anchors.fill: parent
         }
 
+        // ── Slim tactical toolbar header ──────────────────────────────────────
         Rectangle {
             id:             toolDrawerToolbar
             anchors.left:   parent.left
             anchors.right:  parent.right
             anchors.top:    parent.top
-            height:         ScreenTools.toolbarHeight
-            color:          qgcPal.toolbarBackground
+            height:         TacticalTheme.toolbarHeight
+            color:          "transparent"
+
+            // Bottom separator
+            Rectangle {
+                anchors.left:   parent.left
+                anchors.right:  parent.right
+                anchors.bottom: parent.bottom
+                height:         1
+                color:          TacticalTheme.primary
+                opacity:        0.4
+                layer.enabled:  true
+                layer.effect:   MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: TacticalTheme.glowCyan
+                    shadowBlur: 1.0
+                }
+            }
 
             RowLayout {
-                id:                 toolDrawerToolbarLayout
-                anchors.leftMargin: ScreenTools.defaultFontPixelWidth
-                anchors.left:       parent.left
-                anchors.top:        parent.top
-                anchors.bottom:     parent.bottom
-                spacing:            ScreenTools.defaultFontPixelWidth
-
-                QGCToolBarButton {
-                    id: qgcButton
-                    objectName: "toolbar_qgcLogo"
-                    height: parent.height
-                    icon.source: "/res/QGCLogoFull.svg"
-                    logo: true
-                    onClicked: mainWindow.showToolSelectDialog()
-                }
+                anchors.fill:        parent
+                anchors.leftMargin:  TacticalTheme.spaceMD
+                anchors.rightMargin: TacticalTheme.spaceMD
+                spacing:             TacticalTheme.spaceSM
 
                 QGCLabel {
-                    id:             toolbarDrawerText
-                    text:           toolDrawer.toolTitle
-                    font.pointSize: ScreenTools.largeFontPointSize
+                    text:             toolDrawer.toolTitle.toUpperCase()
+                    font.family:      ScreenTools.monoDataFontFamily
+                    font.pointSize:   ScreenTools.defaultFontPointSize
+                    font.bold:        true
+                    font.letterSpacing: 1.0
+                    color:            TacticalTheme.primary
                 }
             }
         }

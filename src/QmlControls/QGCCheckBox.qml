@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 
 import QGroundControl
 import QGroundControl.Controls
@@ -32,45 +33,48 @@ CheckBox {
     }
 
     contentItem: Text {
-        //implicitWidth:  _noText ? 0 : text.implicitWidth + ScreenTools.defaultFontPixelWidth * 0.25
-        //implicitHeight: _noText ? 0 : Math.max(text.implicitHeight, ScreenTools.checkBoxIndicatorSize)
         leftPadding:        control.indicator.width + control.spacing
         verticalAlignment:  Text.AlignVCenter
         text:               control.text
         font.pointSize:     textFontPointSize
         font.bold:          control.textBold
-        font.family:        ScreenTools.normalFontFamily
+        font.family:        ScreenTools.monoDataFontFamily
+        font.letterSpacing: 0.6
         color:              control.textColor
     }
 
     indicator:  Rectangle {
+        id:             indicatorRect
         implicitWidth:  ScreenTools.implicitCheckBoxHeight
         implicitHeight: implicitWidth
         x:              control.leftPadding
         y:              parent.height / 2 - height / 2
-        color:          control.enabled ? "white" : "transparent"
-        border.color:   qgcPal.buttonBorder
+        color:          "transparent"
+        border.color:   control.checked ? TacticalTheme.primary : TacticalTheme.outlineSubtle
         border.width:   1
-        radius:         ScreenTools.defaultBorderRadius
-        opacity:        control.checkedState === Qt.PartiallyChecked ? 0.5 : 1
+        radius:         0    // Jarvis: sharp edges
+        opacity:        control.enabled ? (control.checkedState === Qt.PartiallyChecked ? 0.5 : 1.0) : TacticalTheme.opacityDisabled
 
+        // Inner glowing fill when checked
         Rectangle {
             anchors.fill:   parent
-            color:          qgcPal.buttonHighlight
-            opacity:        control.hovered ? .2 : 0
-            radius:         parent.radius
+            anchors.margins: 3
+            color:          TacticalTheme.primary
+            visible:        control.checked
+            opacity:        0.9
+            layer.enabled:  true
+            layer.effect:   MultiEffect {
+                shadowEnabled: true
+                shadowColor: TacticalTheme.glowCyan
+                shadowBlur: 1.0
+            }
         }
 
-        QGCColoredImage {
-            source:             "/qmlimages/checkbox-check.svg"
-            color:              qgcPal.buttonHighlight
-            mipmap:             true
-            fillMode:           Image.PreserveAspectFit
-            width:              parent.implicitWidth * 0.75
-            height:             width
-            sourceSize.height:  height
-            visible:            control.checked
-            anchors.centerIn:   parent
+        // Hover effect
+        Rectangle {
+            anchors.fill:   parent
+            color:          TacticalTheme.primary
+            opacity:        control.hovered && !control.checked ? 0.1 : 0
         }
     }
 }

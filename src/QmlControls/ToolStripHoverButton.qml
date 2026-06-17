@@ -27,8 +27,8 @@ Button {
     property real imageScale:        forceImageScale11 && (text == "") ? 0.8 : 0.6
     property real contentMargins:    innerText.height * 0.1
 
-    property color _currentContentColor:  (checked || pressed) ? qgcPal.buttonHighlightText : qgcPal.text
-    property color _currentContentColorSecondary:  (checked || pressed) ? qgcPal.text : qgcPal.buttonHighlight
+    property color _currentContentColor:           (checked || pressed) ? TacticalTheme.cyanAccent : TacticalTheme.textPrimary
+    property color _currentContentColorSecondary:  (checked || pressed) ? TacticalTheme.textPrimary : TacticalTheme.cyanAccent
 
     signal dropped(int index)
 
@@ -109,22 +109,25 @@ Button {
 
             QGCLabel {
                 id:                         innerText
-                text:                       control.text
+                text:                       control.text.toUpperCase()
                 color:                      _currentContentColor
                 anchors.horizontalCenter:   parent.horizontalCenter
-                font.bold:                  !innerImage.visible && !innerImageColorful.visible
-                opacity:                    !innerImage.visible ? 0.8 : 1.0
+                font.family:                ScreenTools.tacticalFontFamily
+                font.pointSize:             control.fontPointSize * 0.9
+                font.bold:                  true
+                font.letterSpacing:         0.5
+                opacity:                    !innerImage.visible ? 0.9 : 1.0
             }
         }
     }
 
     background: Rectangle {
         id:           buttonBkRect
-        // Semi-transparent neon active state preserves icon visibility
+        radius:       0      // Tactical: sharp edges
         color:        (control.checked || control.pressed) ?
-                          Qt.rgba(0, 0.85, 1.0, 0.18) :
-                          ((control.enabled && control.hovered) ? qgcPal.toolStripHoverColor : "transparent")
+                          Qt.rgba(TacticalTheme.cyanAccent.r, TacticalTheme.cyanAccent.g, TacticalTheme.cyanAccent.b, 0.18) :
+                          ((control.enabled && control.hovered) ? Qt.rgba(TacticalTheme.textPrimary.r, TacticalTheme.textPrimary.g, TacticalTheme.textPrimary.b, 0.08) : "transparent")
         border.width: (control.checked || control.pressed) ? 2 : 0
-        border.color: qgcPal.buttonHighlight
+        border.color: TacticalTheme.cyanAccent
     }
 }

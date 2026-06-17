@@ -251,9 +251,11 @@ Item {
         anchors.bottom:         parent.bottom
         height:                 ScreenTools.defaultFontPixelHeight * 2
         width:                  ScreenTools.defaultFontPixelHeight * 2
-        radius:                 ScreenTools.defaultFontPixelHeight / 3
+        radius:                 0
         visible:                !_isExpanded
-        color:                  _fullItem.pipState.isDark ? Qt.rgba(0,0,0,0.75) : Qt.rgba(0,0,0,0.5)
+        color:                  TacticalTheme.surfaceContainerHighest
+        border.width:           1
+        border.color:           TacticalTheme.cyanAccent
         Image {
             width:              parent.width  * 0.75
             height:             parent.height * 0.75

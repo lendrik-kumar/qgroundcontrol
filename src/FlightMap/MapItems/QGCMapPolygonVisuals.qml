@@ -21,7 +21,7 @@ Item {
     property color  altColor:           "transparent"
     property real   interiorOpacity:    1
     property int    borderWidth:        0
-    property color  borderColor:        "black"
+    property color  borderColor:        TacticalTheme.primary
 
     property bool   _circleMode:                false
     property real   _circleRadius
@@ -274,7 +274,7 @@ Item {
             color:          mapPolygon.showAltColor ? altColor : interiorColor
             opacity:        interiorOpacity
             visible:        _root.visible
-            border.color:   mapPolygon.vertexDrag ? "orange" : borderColor
+            border.color:   mapPolygon.vertexDrag ? TacticalTheme.amber : borderColor
             border.width:   mapPolygon.vertexDrag ? 3 : borderWidth
             path:           mapPolygon.vertexDrag ? mapPolygon.dragPath : mapPolygon.path
         }
@@ -647,21 +647,18 @@ Item {
             availableWidth:                 mapControl.centerViewport.width
 
             QGCButton {
-                _horizontalPadding: 0
                 text:               qsTr("Basic")
                 visible:            !mapPolygon.traceMode
                 onClicked:          _resetPolygon()
             }
 
             QGCButton {
-                _horizontalPadding: 0
                 text:               qsTr("Circular")
                 visible:            !mapPolygon.traceMode
                 onClicked:          _resetCircle()
             }
 
             QGCButton {
-                _horizontalPadding: 0
                 text:               mapPolygon.traceMode ? qsTr("Done Tracing") : qsTr("Trace")
                 onClicked: {
                     if (mapPolygon.traceMode) {
@@ -679,7 +676,6 @@ Item {
             }
 
             QGCButton {
-                _horizontalPadding: 0
                 text:               qsTr("Load KML/SHP...")
                 onClicked:          kmlOrSHPLoadDialog.openForLoad()
                 visible:            !mapPolygon.traceMode

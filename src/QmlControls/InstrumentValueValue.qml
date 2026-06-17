@@ -37,10 +37,11 @@ ColumnLayout {
     QGCLabel {
         id:                 label
         Layout.alignment:   Qt.AlignVCenter
+        font.family:        ScreenTools.monoDataFontFamily
         font.pointSize:     _fontSize
         font.letterSpacing: 1.0
-        font.weight:        Font.Medium
-        color:              instrumentValueData.isValidColor(instrumentValueData.currentColor) ? instrumentValueData.currentColor : qgcPal.text
+        font.bold:          true
+        color:              instrumentValueData.isValidColor(instrumentValueData.currentColor) ? instrumentValueData.currentColor : TacticalTheme.textPrimary
         text:               valueText()
 
         function valueText() {

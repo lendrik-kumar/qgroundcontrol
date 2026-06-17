@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AERO-TACTICAL GCS - Mission Planner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e1fdff",
+                        "inverse-primary": "#00696f",
+                        "inverse-surface": "#dee3ea",
+                        "primary-container": "#00f2ff",
+                        "background": "#0f1419",
+                        "surface-tint": "#00dbe7",
+                        "surface-container-low": "#171c21",
+                        "on-tertiary-container": "#c2031a",
+                        "on-tertiary": "#680008",
+                        "surface-container-high": "#252a30",
+                        "on-secondary-fixed": "#271900",
+                        "on-primary": "#00363a",
+                        "on-secondary-fixed-variant": "#5e4200",
+                        "tertiary": "#fff5f4",
+                        "surface-container-highest": "#30353b",
+                        "primary-fixed-dim": "#00dbe7",
+                        "tertiary-container": "#ffd0cb",
+                        "surface-variant": "#30353b",
+                        "surface-dim": "#0f1419",
+                        "inverse-on-surface": "#2c3137",
+                        "surface": "#0f1419",
+                        "on-surface-variant": "#b9cacb",
+                        "on-primary-fixed": "#002022",
+                        "outline": "#849495",
+                        "surface-container-lowest": "#0a0f14",
+                        "surface-bright": "#353a3f",
+                        "secondary-container": "#feb700",
+                        "on-primary-fixed-variant": "#004f54",
+                        "on-background": "#dee3ea",
+                        "primary-fixed": "#74f5ff",
+                        "on-error": "#690005",
+                        "surface-container": "#1b2025",
+                        "on-secondary": "#412d00",
+                        "error-container": "#93000a",
+                        "outline-variant": "#3a494b",
+                        "on-primary-container": "#006a71",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#ffdea8",
+                        "on-tertiary-fixed": "#410003",
+                        "on-surface": "#dee3ea",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "on-secondary-container": "#6b4b00",
+                        "secondary": "#ffdb9d",
+                        "tertiary-fixed": "#ffdad6",
+                        "secondary-fixed-dim": "#ffba20"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter-sm": "8px",
+                        "stack-compact": "4px",
+                        "margin-mobile": "12px",
+                        "unit": "4px",
+                        "safe-area-top": "44px"
+                    },
+                    fontFamily: {
+                        "headline-sm": ["Archivo Narrow"],
+                        "display-tactical": ["Archivo Narrow"],
+                        "data-mono": ["Space Mono"],
+                        "label-caps": ["Space Mono"],
+                        "headline-lg": ["Archivo Narrow"],
+                        "body-md": ["Archivo Narrow"],
+                        "display-tactical-mobile": ["Archivo Narrow"]
+                    },
+                    fontSize: {
+                        "headline-sm": ["18px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "display-tactical": ["32px", { "lineHeight": "1.1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "data-mono": ["12px", { "lineHeight": "1.0", "fontWeight": "400" }],
+                        "label-caps": ["10px", { "lineHeight": "1.2", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "display-tactical-mobile": ["24px", { "lineHeight": "1.1", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0f1419; color: #dee3ea; overflow: hidden; }
+        .glass-panel { background: rgba(23, 28, 33, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(0, 219, 231, 0.2); }
+        .glow-active { box-shadow: 0 0 8px 0 rgba(0, 219, 231, 0.8); }
+        .grid-bg { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(0, 219, 231, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 219, 231, 0.05) 1px, transparent 1px); }
+        .animate-pulse-fast { animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        /* Custom Scrollbar for inner panes */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 20, 25, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 219, 231, 0.3); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 219, 231, 0.8); }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 z-40 flex justify-between items-center px-6 w-full h-12 border-b border-primary/20 bg-surface-container-lowest/60 backdrop-blur-md shadow-[0_4px_10px_rgba(0,0,0,0.5)]">
+<div class="font-headline-sm text-headline-sm text-primary font-bold tracking-widest">
+            AERO-TACTICAL GCS
+        </div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-primary font-data-mono text-data-mono">
+<span class="animate-pulse-slow">BAT: 98%</span>
+<span class="animate-pulse-slow">GPS: LOCK</span>
+<span class="animate-pulse-slow">LINK: 120ms</span>
+<span class="animate-pulse-slow">SIG: 100%</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-fixed-dim drop-shadow-[0_0_5px_#00dbe7] hover:text-primary-container cursor-crosshair transition-colors" data-icon="battery_charging_full" data-weight="fill" style="font-variation-settings: 'FILL' 1;">battery_charging_full</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary-container cursor-crosshair transition-colors" data-icon="location_on">location_on</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary-container cursor-crosshair transition-colors" data-icon="settings_input_antenna">settings_input_antenna</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary-container cursor-crosshair transition-colors" data-icon="signal_cellular_alt">signal_cellular_alt</span>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col z-50 h-screen w-20 md:w-64 border-r border-primary/20 bg-surface-container-low/80 backdrop-blur-xl shadow-[0_0_15px_rgba(0,219,231,0.1)] transition-all duration-200 ease-in-out hidden md:flex">
+<div class="p-6 border-b border-primary/10 flex flex-col items-center md:items-start">
+<div class="w-12 h-12 bg-surface-container-high rounded-full border border-primary/30 flex items-center justify-center mb-4 overflow-hidden relative">
+<!-- Placeholder Avatar -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/20 to-transparent"></div>
+<span class="material-symbols-outlined text-primary text-2xl relative z-10">person</span>
+</div>
+<div class="hidden md:block">
+<h2 class="font-display-tactical text-display-tactical text-primary uppercase tracking-tighter">GCS-01</h2>
+<p class="font-label-caps text-label-caps text-primary/70 mt-1">VANGUARD STATUS: ACTIVE</p>
+</div>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 transition-colors hover:bg-primary/5 hover:text-primary" href="#" title="Dashboard">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="hidden md:block font-label-caps text-label-caps tracking-widest">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-primary/10 text-primary border-l-4 border-primary px-4 py-3 hover:bg-primary/5 hover:text-primary" href="#" title="Mission">
+<span class="material-symbols-outlined" data-icon="explore" data-weight="fill" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="hidden md:block font-label-caps text-label-caps tracking-widest">Mission</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 transition-colors hover:bg-primary/5 hover:text-primary" href="#" title="Media">
+<span class="material-symbols-outlined" data-icon="perm_media">perm_media</span>
+<span class="hidden md:block font-label-caps text-label-caps tracking-widest">Media</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:text-primary px-4 py-3 transition-colors hover:bg-primary/5 hover:text-primary" href="#" title="Settings">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="hidden md:block font-label-caps text-label-caps tracking-widest">Settings</span>
+</a>
+</div>
+<div class="p-4 mt-auto border-t border-primary/10">
+<button class="w-full py-2 px-4 border border-primary/30 text-primary hover:bg-primary/10 transition-colors flex justify-center items-center gap-2 rounded-sm font-label-caps text-label-caps tracking-widest uppercase">
+<span class="hidden md:inline">Action Center</span>
+<span class="material-symbols-outlined text-sm md:hidden" data-icon="bolt">bolt</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas (Mission Planner Layout) -->
+<main class="flex-1 flex pt-12 md:pl-64 overflow-hidden relative">
+<!-- Left Pane: Waypoint List -->
+<aside class="w-80 glass-panel border-r border-t-0 border-b-0 border-l-0 flex flex-col z-10 shrink-0">
+<div class="p-4 border-b border-primary/20 bg-surface-container-low/50">
+<h3 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">route</span> WAYPOINT SEQ
+                </h3>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Waypoint Item 1 (Active) -->
+<div class="border border-primary bg-primary/10 p-3 rounded-sm relative glow-active">
+<div class="absolute -left-[1px] top-0 bottom-0 w-[3px] bg-primary"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-primary">WP-01 [HOME]</span>
+<span class="material-symbols-outlined text-primary text-sm animate-pulse-fast">my_location</span>
+</div>
+<div class="grid grid-cols-3 gap-2 font-data-mono text-data-mono text-on-surface-variant">
+<div>
+<div class="text-[8px] text-outline mb-1">ALT (m)</div>
+<input class="w-full bg-surface-container-highest border-b border-primary/30 p-1 text-primary focus:outline-none focus:border-primary text-center" type="text" value="120"/>
+</div>
+<div>
+<div class="text-[8px] text-outline mb-1">SPD (m/s)</div>
+<input class="w-full bg-surface-container-highest border-b border-primary/30 p-1 text-primary focus:outline-none focus:border-primary text-center" type="text" value="15"/>
+</div>
+<div>
+<div class="text-[8px] text-outline mb-1">LTR (s)</div>
+<input class="w-full bg-surface-container-highest border-b border-primary/30 p-1 text-primary focus:outline-none focus:border-primary text-center" type="text" value="0"/>
+</div>
+</div>
+</div>
+<!-- Waypoint Item 2 -->
+<div class="border border-outline-variant bg-surface-container-low/50 p-3 rounded-sm hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface">WP-02</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">location_on</span>
+</div>
+<div class="grid grid-cols-3 gap-2 font-data-mono text-data-mono text-on-surface-variant">
+<div>
+<div class="text-[8px] text-outline mb-1">ALT (m)</div>
+<input class="w-full bg-transparent border-b border-outline-variant p-1 text-on-surface focus:outline-none focus:border-primary focus:text-primary text-center" type="text" value="150"/>
+</div>
+<div>
+<div class="text-[8px] text-outline mb-1">SPD (m/s)</div>
+<input class="w-full bg-transparent border-b border-outline-variant p-1 text-on-surface focus:outline-none focus:border-primary focus:text-primary text-center" type="text" value="18"/>
+</div>
+<div>
+<div class="text-[8px] text-outline mb-1">LTR (s)</div>
+<input class="w-full bg-transparent border-b border-outline-variant p-1 text-on-surface focus:outline-none focus:border-primary focus:text-primary text-center" type="text" value="10"/>
+</div>
+</div>
+</div>
+<!-- Waypoint Item 3 -->
+<div class="border border-outline-variant bg-surface-container-low/50 p-3 rounded-sm hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface">WP-03 [TARGET]</span>
+<span class="material-symbols-outlined text-secondary text-sm">filter_center_focus</span>
+</div>
+<div class="grid grid-cols-3 gap-2 font-data-mono text-data-mono text-on-surface-variant">
+<div>
+<div class="text-[8px] text-outline mb-1">ALT (m)</div>
+<input class="w-full bg-transparent border-b border-outline-variant p-1 text-on-surface focus:outline-none focus:border-primary focus:text-primary text-center" type="text" value="80"/>
+</div>
+<div>
+<div class="text-[8px] text-outline mb-1">SPD (m/s)</div>
+<input class="w-full bg-transparent border-b border-outline-variant p-1 text-on-surface focus:outline-none focus:border-primary focus:text-primary text-center" type="text" value="10"/>
+</div>
+<div>
+<div class="text-[8px] text-outline mb-1">LTR (s)</div>
+<input class="w-full bg-transparent border-b border-outline-variant p-1 text-on-surface focus:outline-none focus:border-primary focus:text-primary text-center text-secondary" type="text" value="120"/>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-primary/20">
+<button class="w-full py-2 bg-primary/10 border border-primary text-primary hover:bg-primary/20 transition-all rounded-sm font-label-caps text-label-caps flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span> ADD WAYPOINT
+                </button>
+</div>
+</aside>
+<!-- Center Pane: Map & HUD -->
+<section class="flex-1 relative bg-background flex flex-col">
+<!-- Simulated Map Background -->
+<div class="absolute inset-0 bg-surface-dim grid-bg opacity-30 z-0"></div>
+<!-- Map Toolbar overlay -->
+<div class="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 glass-panel px-4 py-2 rounded-full shadow-lg">
+<button class="p-2 text-primary hover:text-primary-container transition-colors rounded-full hover:bg-surface-container-high" title="Layers">
+<span class="material-symbols-outlined">layers</span>
+</button>
+<div class="w-px h-6 bg-primary/20 self-center mx-1"></div>
+<button class="p-2 text-primary hover:text-primary-container transition-colors rounded-full hover:bg-surface-container-high" title="Measure">
+<span class="material-symbols-outlined">straighten</span>
+</button>
+<button class="p-2 text-primary hover:text-primary-container transition-colors rounded-full hover:bg-surface-container-high" title="Draw Geofence">
+<span class="material-symbols-outlined">polyline</span>
+</button>
+<div class="w-px h-6 bg-primary/20 self-center mx-1"></div>
+<button class="p-2 text-primary hover:text-primary-container transition-colors rounded-full hover:bg-surface-container-high" title="Center Drone">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+<!-- Simulated Map Elements (SVG) -->
+<div class="absolute inset-0 z-10 pointer-events-none">
+<!-- Geofence -->
+<svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+<polygon fill="rgba(255, 180, 171, 0.05)" points="100,100 800,50 900,600 200,800" stroke="#ffb4ab" stroke-dasharray="4 4" stroke-width="1"></polygon>
+<!-- Mission Path -->
+<polyline fill="none" points="400,400 550,250 700,500" stroke="#00f2ff" stroke-width="2"></polyline>
+<!-- Waypoints -->
+<circle class="animate-pulse-fast" cx="400" cy="400" fill="#00f2ff" r="6"></circle>
+<circle cx="550" cy="250" fill="#0f1419" r="4" stroke="#00f2ff" stroke-width="2"></circle>
+<circle cx="700" cy="500" fill="#0f1419" r="4" stroke="#feb700" stroke-width="2"></circle>
+<!-- HUD Crosshair -->
+<g opacity="0.5" stroke="#00f2ff" stroke-width="0.5">
+<line x1="50%" x2="50%" y1="0" y2="100%"></line>
+<line x1="0" x2="100%" y1="50%" y2="50%"></line>
+<circle cx="50%" cy="50%" fill="none" r="50"></circle>
+</g>
+</svg>
+</div>
+<!-- Bottom HUD Data -->
+<div class="absolute bottom-4 left-4 right-4 z-20 flex justify-between pointer-events-none">
+<div class="glass-panel p-2 flex gap-4 pointer-events-auto">
+<div class="text-data-mono font-data-mono text-primary flex flex-col">
+<span class="text-outline text-[10px]">LAT/LON</span>
+<span>34.0522° N, 118.2437° W</span>
+</div>
+<div class="w-px h-full bg-primary/20"></div>
+<div class="text-data-mono font-data-mono text-primary flex flex-col">
+<span class="text-outline text-[10px]">ELEV</span>
+<span>420m MSL</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Pane: Mission Params & Checklist -->
+<aside class="w-72 glass-panel border-l border-t-0 border-b-0 border-r-0 flex flex-col z-10 shrink-0">
+<div class="p-4 border-b border-primary/20 bg-surface-container-low/50">
+<h3 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">fact_check</span> PRE-FLIGHT
+                </h3>
+</div>
+<div class="flex-1 p-4 overflow-y-auto flex flex-col gap-6">
+<!-- Global Params -->
+<div class="space-y-3">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant/30 pb-1">GLOBAL PARAMETERS</h4>
+<div class="flex justify-between items-center text-data-mono font-data-mono">
+<span class="text-outline">RTL ALT</span>
+<div class="flex items-center gap-1">
+<input class="w-12 bg-transparent border-b border-outline-variant text-right text-primary focus:outline-none focus:border-primary" type="text" value="100"/>
+<span class="text-on-surface-variant">m</span>
+</div>
+</div>
+<div class="flex justify-between items-center text-data-mono font-data-mono">
+<span class="text-outline">LOSS COMM</span>
+<select class="bg-surface-container-high border border-outline-variant text-primary text-xs p-1 focus:outline-none focus:border-primary rounded-sm w-24">
+<option>RTL</option>
+<option>HOVER</option>
+<option>LAND</option>
+</select>
+</div>
+</div>
+<!-- Checklist -->
+<div class="space-y-2 flex-1">
+<h4 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant/30 pb-1 mb-3">SYSTEM CHECK</h4>
+<label class="flex items-center gap-3 p-2 bg-surface-container-high/50 border border-primary/20 rounded-sm cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="form-checkbox bg-transparent border-primary text-primary focus:ring-0 focus:ring-offset-0 w-4 h-4 rounded-sm" type="checkbox"/>
+<span class="font-data-mono text-data-mono text-primary">COMM LINK SECURE</span>
+</label>
+<label class="flex items-center gap-3 p-2 bg-surface-container-high/50 border border-primary/20 rounded-sm cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="form-checkbox bg-transparent border-primary text-primary focus:ring-0 focus:ring-offset-0 w-4 h-4 rounded-sm" type="checkbox"/>
+<span class="font-data-mono text-data-mono text-primary">GPS 3D FIX (12 SATS)</span>
+</label>
+<label class="flex items-center gap-3 p-2 bg-surface-container-high/50 border border-primary/20 rounded-sm cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="form-checkbox bg-transparent border-outline text-primary focus:ring-0 focus:ring-offset-0 w-4 h-4 rounded-sm" type="checkbox"/>
+<span class="font-data-mono text-data-mono text-on-surface">PAYLOAD GIMBAL CAL</span>
+</label>
+</div>
+</div>
+<!-- Upload Action -->
+<div class="p-4 border-t border-primary/20 bg-surface-container-lowest mt-auto">
+<button class="w-full py-3 bg-primary/20 border border-primary text-primary hover:bg-primary hover:text-on-primary transition-all rounded-sm font-headline-sm text-headline-sm tracking-widest flex justify-center items-center gap-2 glow-active">
+<span class="material-symbols-outlined">upload</span> UPLOAD MISSION
+                </button>
+</div>
+</aside>
+</main>
+</body></html>

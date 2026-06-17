@@ -2,197 +2,264 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import QtQuick.Effects
 
 import QGroundControl
 import QGroundControl.Controls
 import QGroundControl.FlyView
 
+/// FlyViewToolBar — Aero-Tactical slim status bar (Phase 3)
+///
+/// Design: 36px tall transparent header with Space Mono telemetry readouts.
+/// Left:   vehicle ID + main status + flight mode
+/// Center: guided action confirm (when active)
+/// Right:  BAT / GPS / LINK / SIG indicators in monospaced cyan
+///
 Item {
     required property var guidedValueSlider
 
     id:     control
     width:  parent.width
-    height: ScreenTools.toolbarHeight
+    height: TacticalTheme.toolbarHeight
 
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
     property bool   _communicationLost: _activeVehicle ? _activeVehicle.vehicleLinkManager.communicationLost : false
-    property color  _mainStatusBGColor: qgcPal.colorBlue
-    property real   _leftRightMargin:   ScreenTools.defaultFontPixelWidth * 0.75
     property var    _guidedController:  globals.guidedControllerFlyView
-    property real   _segmentPadding:    ScreenTools.defaultFontPixelWidth * 0.6
-    property real   _segmentRadius:     ScreenTools.defaultBorderRadius
+    property real   _hPad:             TacticalTheme.spaceMD
 
     function dropMainStatusIndicatorTool() {
-        mainStatusIndicator.dropMainStatusIndicator();
+        mainStatusIndicator.dropMainStatusIndicator()
     }
 
     QGCPalette { id: qgcPal }
 
-    // Unified NEXUS COMMAND toolbar background — single dark glassmorphism slab
+    // ── Background — fully transparent, map/video shows through ──────────────
     Rectangle {
-        anchors.fill:   parent
-        color:          qgcPal.windowShade
-        opacity:        0.88
-        z:              -1
+        anchors.fill: parent
+        color:        "#E80F1419"   // 91% opacity deep space
     }
 
-    // Bottom scanline separator — sky-blue from palette
+    // ── Bottom 1px cyan separator ─────────────────────────────────────────────
     Rectangle {
         anchors.left:   parent.left
         anchors.right:  parent.right
         anchors.bottom: parent.bottom
-        height:         2
-        color:          qgcPal.colorBlue
-        opacity:        0.85
-    }
-
-    QGCFlickable {
-        anchors.fill:       parent
-        contentWidth:       toolBarLayout.width
-        flickableDirection: Flickable.HorizontalFlick
-
-        Row {
-            id:         toolBarLayout
-            height:     parent.height
-            spacing:    0
-
-            Item {
-                id:     leftPanel
-                width:  leftPanelLayout.implicitWidth + (_segmentPadding * 2)
-                height: parent.height
-
-                // Transparent — unified toolbar bg handles visuals
-                Item { anchors.fill: parent }
-
-                RowLayout {
-                    id:         leftPanelLayout
-                    anchors.fill: parent
-                    anchors.margins: _segmentPadding
-                    spacing:    ScreenTools.defaultFontPixelWidth * 1.5
-
-                    RowLayout {
-                        id:         mainStatusLayout
-                        height:     parent.height
-                        spacing:    0
-
-                        QGCToolBarButton {
-                            id:                 qgcButton
-                            objectName:         "toolbar_qgcLogo"
-                            Layout.fillHeight:  true
-                            icon.source:        "/res/darshak_logo.png"
-                            logo:               true
-                            onClicked:          mainWindow.showToolSelectDialog()
-                        }
-
-                        MainStatusIndicator {
-                            id:                 mainStatusIndicator
-                            Layout.fillHeight:  true
-                        }
-                    }
-
-                    FlightModeIndicator {
-                        Layout.fillHeight:  true
-                        visible:            _activeVehicle
-                    }
-                }
-            }
-            Item {
-                id:     centerPanel
-                // center panel takes up all remaining space in toolbar between left and right panels
-                width:  Math.max(guidedActionConfirm.visible ? guidedActionConfirm.width : 0, control.width - (leftPanel.width + rightPanel.width))
-                height: parent.height
-
-                // Guided action highlight only when active
-                Rectangle {
-                    anchors.fill:    parent
-                    anchors.margins: _segmentPadding
-                    color:           "transparent"
-                    border.width:    guidedActionConfirm.visible ? 1 : 0
-                    border.color:    qgcPal.buttonHighlight
-                    opacity:         guidedActionConfirm.visible ? 0.9 : 0
-                }
-
-                GuidedActionConfirm {
-                    id:                         guidedActionConfirm
-                    height:                     parent.height
-                    anchors.horizontalCenter:   parent.horizontalCenter
-                    guidedController:           control._guidedController
-                    guidedValueSlider:          control.guidedValueSlider
-                    messageDisplay:             guidedActionMessageDisplay
-                }
-            }
-
-            Item {
-                id:     rightPanel
-                width:  flyViewIndicators.width + (_segmentPadding * 2)
-                height: parent.height
-
-                // Transparent — unified toolbar bg handles visuals
-                Item { anchors.fill: parent }
-
-                FlyViewToolBarIndicators {
-                    id:     flyViewIndicators
-                    height: parent.height
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: _segmentPadding
-                }
-            }
+        height:         1
+        color:          TacticalTheme.primary
+        opacity:        0.5
+        layer.enabled:  true
+        layer.effect:   MultiEffect {
+            shadowEnabled: true
+            shadowColor: TacticalTheme.glowCyan
+            shadowBlur: 1.0
         }
     }
 
-    // The guided action message display is outside of the GuidedActionConfirm control so that it doesn't end up as
-    // part of the Flickable
-        Rectangle {
-            id:                         guidedActionMessageDisplay
-        anchors.top:                control.bottom
-        anchors.topMargin:          _margins
-        x:                          control.mapFromItem(guidedActionConfirm.parent, guidedActionConfirm.x, 0).x + (guidedActionConfirm.width - guidedActionMessageDisplay.width) / 2
-        width:                      messageLabel.contentWidth + (_margins * 2)
-        height:                     messageLabel.contentHeight + (_margins * 2)
-            color:                      qgcPal.windowShade
-            radius:                     ScreenTools.defaultBorderRadius
-            visible:                    guidedActionConfirm.visible
+    // ── Layout: Left | Center | Right ────────────────────────────────────────
+    RowLayout {
+        anchors.fill:            parent
+        anchors.leftMargin:      _hPad
+        anchors.rightMargin:     _hPad
+        spacing:                 0
 
-            border.width: 1
-            border.color: qgcPal.buttonBorder
+        // ── LEFT: Status + Mode ───────────────────────────────────────────────
+        Row {
+            spacing: TacticalTheme.spaceSM
+            Layout.alignment: Qt.AlignVCenter
+
+            // Main status (armed/disarmed + errors)
+            MainStatusIndicator {
+                id:     mainStatusIndicator
+                height: control.height
+            }
+
+            // Separator
+            Rectangle {
+                width:   1
+                height:  control.height * 0.55
+                color:   TacticalTheme.outlineSubtle
+                anchors.verticalCenter: parent.verticalCenter
+                visible: _activeVehicle !== null
+            }
+
+            // Flight mode
+            FlightModeIndicator {
+                height:  control.height
+                visible: _activeVehicle !== null
+            }
+        }
+
+        // ── CENTER: Guided action confirm ─────────────────────────────────────
+        Item {
+            Layout.fillWidth: true
+            height:           control.height
+
+            GuidedActionConfirm {
+                id:                         guidedActionConfirm
+                height:                     parent.height
+                anchors.horizontalCenter:   parent.horizontalCenter
+                guidedController:           control._guidedController
+                guidedValueSlider:          control.guidedValueSlider
+                messageDisplay:             guidedActionMessageDisplay
+            }
+        }
+
+        // ── RIGHT: Telemetry readouts in Space Mono ───────────────────────────
+        Row {
+            spacing: TacticalTheme.spaceLG
+            Layout.alignment: Qt.AlignVCenter
+            visible: _activeVehicle !== null
+
+            // BAT
+            Column {
+                spacing: 0
+                anchors.verticalCenter: parent.verticalCenter
+
+                QGCLabel {
+                    text:           "BAT"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.72
+                    color:          TacticalTheme.textSecondary
+                    font.letterSpacing: 0.8
+                }
+                QGCLabel {
+                    text:           _activeVehicle ? (_activeVehicle.battery.percentRemaining.value.toFixed(0) + "%") : "---"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.9
+                    color:          {
+                        if (!_activeVehicle) return TacticalTheme.textSecondary
+                        var pct = _activeVehicle.battery.percentRemaining.value
+                        return pct < 20 ? TacticalTheme.signalRed : pct < 40 ? TacticalTheme.amber : TacticalTheme.primary
+                    }
+                    font.bold: true
+                }
+            }
+
+            // GPS
+            Column {
+                spacing: 0
+                anchors.verticalCenter: parent.verticalCenter
+
+                QGCLabel {
+                    text:           "GPS"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.72
+                    color:          TacticalTheme.textSecondary
+                    font.letterSpacing: 0.8
+                }
+                QGCLabel {
+                    text:           _activeVehicle && _activeVehicle.gps.lock.rawValue >= 3 ? "LOCK" : "SRCH"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.9
+                    color:          _activeVehicle && _activeVehicle.gps.lock.rawValue >= 3 ? TacticalTheme.primary : TacticalTheme.amber
+                    font.bold:      true
+                }
+            }
+
+            // LINK
+            Column {
+                spacing: 0
+                anchors.verticalCenter: parent.verticalCenter
+
+                QGCLabel {
+                    text:           "LINK"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.72
+                    color:          TacticalTheme.textSecondary
+                    font.letterSpacing: 0.8
+                }
+                QGCLabel {
+                    text:           _activeVehicle ? (_activeVehicle.vehicleLinkManager.communicationLostEnabled ? "LOST" :
+                                        (_activeVehicle.mavlinkMessageStatusMsgs.length > 0 ? "OK" : "---")) : "---"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.9
+                    color:          _communicationLost ? TacticalTheme.signalRed : TacticalTheme.primary
+                    font.bold:      true
+                }
+            }
+
+            // SIG (RC RSSI)
+            Column {
+                spacing: 0
+                anchors.verticalCenter: parent.verticalCenter
+                visible: _activeVehicle && _activeVehicle.rcRSSI !== 255
+
+                QGCLabel {
+                    text:           "SIG"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.72
+                    color:          TacticalTheme.textSecondary
+                    font.letterSpacing: 0.8
+                }
+                QGCLabel {
+                    text:           _activeVehicle ? (_activeVehicle.rcRSSI + "%") : "---"
+                    font.family:    ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.9
+                    color:          TacticalTheme.primary
+                    font.bold:      true
+                }
+            }
+
+            // Icon indicators row (battery, gps, link icons)
+            FlyViewToolBarIndicators {
+                id:     flyViewIndicators
+                height: control.height
+            }
+        }
+
+        // Disconnect button (communication lost state)
+        QGCButton {
+            id:         disconnectButton
+            text:       qsTr("Disconnect")
+            primary:    true
+            visible:    _activeVehicle && _communicationLost
+            Layout.alignment: Qt.AlignVCenter
+            onClicked:  _activeVehicle.closeVehicle()
+        }
+    }
+
+    // ── Guided action message display ─────────────────────────────────────────
+    Rectangle {
+        id:                    guidedActionMessageDisplay
+        anchors.top:           control.bottom
+        anchors.topMargin:     TacticalTheme.spaceXS
+        x:                     guidedActionConfirm.x + _sidebar.width + (guidedActionConfirm.width - width) / 2
+        width:                 messageLabel.contentWidth + TacticalTheme.spaceLG
+        height:                messageLabel.contentHeight + TacticalTheme.spaceSM
+        color:                 TacticalTheme.surfaceContainerHigh
+        border.width:          1
+        border.color:          TacticalTheme.primary
+        visible:               guidedActionConfirm.visible
+        opacity:               0.95
 
         QGCLabel {
-            id:         messageLabel
-            x:          _margins
-            y:          _margins
-            width:      ScreenTools.defaultFontPixelWidth * 30
-            wrapMode:   Text.WordWrap
-            text:       guidedActionConfirm.message
+            id:          messageLabel
+            x:           TacticalTheme.spaceSM
+            y:           TacticalTheme.spaceXS
+            width:       ScreenTools.defaultFontPixelWidth * 30
+            wrapMode:    Text.WordWrap
+            text:        guidedActionConfirm.message
+            font.family: ScreenTools.monoDataFontFamily
+            color:       TacticalTheme.textPrimary
         }
 
         PropertyAnimation {
-            id:         messageOpacityAnimation
-            target:     guidedActionMessageDisplay
-            property:   "opacity"
-            from:       1
-            to:         0
-            duration:   500
+            id:       messageOpacityAnimation
+            target:   guidedActionMessageDisplay
+            property: "opacity"
+            from:     1
+            to:       0
+            duration: 500
         }
 
         Timer {
-            id:             messageFadeTimer
-            interval:       4000
-            onTriggered:    messageOpacityAnimation.start()
+            id:          messageFadeTimer
+            interval:    4000
+            onTriggered: messageOpacityAnimation.start()
         }
     }
 
     ParameterDownloadProgress {
         anchors.fill: parent
-    }
-
-    QGCButton {
-        id:         disconnectButton
-        text:       qsTr("Disconnect")
-        anchors.right: rightPanel.left
-        anchors.rightMargin: _leftRightMargin
-        anchors.verticalCenter: parent.verticalCenter
-        visible:    _activeVehicle && _communicationLost
-        onClicked:  _activeVehicle.closeVehicle()
     }
 }

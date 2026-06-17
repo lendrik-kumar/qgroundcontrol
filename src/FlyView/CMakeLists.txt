@@ -12,6 +12,7 @@ qt_add_qml_module(FlyViewModule
     QML_FILES
         AltitudeTapeLadder.qml
         CustomGuidedActionsController.qml
+        FlyViewHUDOverlay.qml
         DefaultChecklist.qml
         FixedWingChecklist.qml
         FlightDisplayViewDummy.qml
@@ -68,6 +69,7 @@ qt_add_qml_module(FlyViewModule
         SpeedTapeLadder.qml
         SubChecklist.qml
         TacticalActionOverlay.qml
+        TacticalBottomActionBar.qml
         TacticalNotificationDrawer.qml
         TelemetryValuesBar.qml
         TerrainProgress.qml

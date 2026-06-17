@@ -7,7 +7,7 @@ import QGroundControl.Controls
 
 Rectangle {
     id:     vehicleConfigView
-    color:  QGroundControl.globalPalette.window
+    color:  TacticalTheme.surfaceBase
     z:      QGroundControl.zOrderTopMost
 
     // This need to block click event leakage to underlying map.
@@ -232,7 +232,7 @@ Rectangle {
     Component {
         id: noComponentsVehicleSummaryComponent
         Rectangle {
-            color: qgcPal.windowShade
+            color: TacticalTheme.surfaceContainer
             QGCLabel {
                 anchors.margins:        _defaultTextWidth * 2
                 anchors.fill:           parent
@@ -250,7 +250,7 @@ Rectangle {
         id: disconnectedVehicleAndParamsSummaryComponent
         Rectangle {
             id: disconnectedRect
-            color: qgcPal.windowShade
+            color: TacticalTheme.surfaceContainer
             Column {
                 anchors.centerIn:   parent
                 spacing:            ScreenTools.defaultFontPixelHeight
@@ -281,7 +281,7 @@ Rectangle {
         id: missingParametersVehicleSummaryComponent
 
         Rectangle {
-            color: qgcPal.windowShade
+            color: TacticalTheme.surfaceContainer
 
             QGCLabel {
                 anchors.margins:        _defaultTextWidth * 2
@@ -315,10 +315,10 @@ Rectangle {
     Rectangle {
         anchors.fill:       leftPanel
         anchors.margins:    -_horizontalMargin * 0.5
-        color:              qgcPal.windowShade
-        radius:             ScreenTools.defaultBorderRadius
+        color:              TacticalTheme.surfaceContainer
+        radius:             0
         border.width:       1
-        border.color:       qgcPal.buttonBorder
+        border.color:       TacticalTheme.cyanAccent
         opacity:            0.55
     }
 
@@ -455,13 +455,14 @@ Rectangle {
                                     if (typeof panelLoader.item.sectionVisible !== "function") return true
                                     return panelLoader.item.sectionVisible(modelData)
                                 }
-                                property color textColor: sectionChecked || pressed ? qgcPal.buttonHighlightText : qgcPal.buttonText
+                                property color textColor: sectionChecked || pressed ? TacticalTheme.cyanAccent : TacticalTheme.textPrimary
                                 visible: sectionMatchesSearch && sectionContentVisible
 
                                 background: Rectangle {
-                                    color:   qgcPal.buttonHighlight
-                                    opacity: sectionBtn.sectionChecked || sectionBtn.pressed ? 1 : sectionBtn.enabled && sectionBtn.hovered ? 0.2 : 0
-                                    radius:  ScreenTools.defaultFontPixelWidth / 2
+                                    color:   sectionBtn.sectionChecked || sectionBtn.pressed ? Qt.rgba(TacticalTheme.cyanAccent.r, TacticalTheme.cyanAccent.g, TacticalTheme.cyanAccent.b, 0.18) : (sectionBtn.enabled && sectionBtn.hovered ? Qt.rgba(TacticalTheme.cyanAccent.r, TacticalTheme.cyanAccent.g, TacticalTheme.cyanAccent.b, 0.07) : "transparent")
+                                    border.color: sectionBtn.sectionChecked || sectionBtn.pressed ? TacticalTheme.cyanAccent : "transparent"
+                                    border.width: 1
+                                    radius:  0
                                 }
 
                                 contentItem: RowLayout {
@@ -479,9 +480,12 @@ Rectangle {
                                     }
 
                                     QGCLabel {
-                                        text:  vehicleConfigView._translateSection(compColumn.comp, modelData)
+                                        text:  vehicleConfigView._translateSection(compColumn.comp, modelData).toUpperCase()
                                         color: sectionBtn.textColor
+                                        font.family: ScreenTools.tacticalFontFamily
                                         font.pointSize: ScreenTools.defaultFontPointSize * 0.9
+                                        font.letterSpacing: 0.6
+                                        font.bold: true
                                         horizontalAlignment: Text.AlignLeft
                                         Layout.fillWidth: true
                                     }
@@ -547,7 +551,7 @@ Rectangle {
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
         width:                  1
-        color:                  qgcPal.brandingBlue
+        color:                  TacticalTheme.cyanAccent
         opacity:                0.3
     }
 

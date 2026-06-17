@@ -165,7 +165,7 @@ Item {
 
         MapPolyline {
             line.width: mapPolyline.vertexDrag ? 3 : lineWidth
-            line.color: mapPolyline.vertexDrag ? "orange" : lineColor
+            line.color: mapPolyline.vertexDrag ? TacticalTheme.amber : lineColor
             path:       mapPolyline.vertexDrag ? mapPolyline.dragPath : mapPolyline.path
             visible:    _root.visible
             opacity:    _root.opacity
@@ -393,31 +393,33 @@ Item {
             availableWidth:                 mapControl.centerViewport.width
 
             QGCButton {
-                _horizontalPadding: 0
                 text:               qsTr("Basic")
                 visible:            !mapPolyline.traceMode
                 onClicked:          _resetPolyline()
             }
 
             QGCButton {
-                _horizontalPadding: 0
-                text:               mapPolyline.traceMode ? qsTr("Done Tracing") : qsTr("Trace")
+                text:               qsTr("Trace")
+                visible:            !mapPolyline.traceMode
                 onClicked: {
-                    if (mapPolyline.traceMode) {
-                        if (mapPolyline.count < 2) {
-                            _restorePreviousVertices()
-                        }
-                        mapPolyline.traceMode = false
-                    } else {
-                        _saveCurrentVertices()
-                        mapPolyline.traceMode = true
-                        mapPolyline.clear();
-                    }
+                    _saveCurrentVertices()
+                    mapPolyline.traceMode = true
+                    mapPolyline.clear()
                 }
             }
 
             QGCButton {
-                _horizontalPadding: 0
+                text:               qsTr("Done Tracing")
+                visible:            mapPolyline.traceMode
+                onClicked: {
+                    if (mapPolyline.count < 2) {
+                        _restorePreviousVertices()
+                    }
+                    mapPolyline.traceMode = false
+                }
+            }
+
+            QGCButton {
                 text:               qsTr("Load KML/SHP...")
                 onClicked:          kmlOrSHPLoadDialog.openForLoad()
                 visible:            !mapPolyline.traceMode

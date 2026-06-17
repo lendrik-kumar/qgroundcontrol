@@ -30,9 +30,12 @@ RowLayout {
         Layout.fillHeight:  true
         Layout.preferredWidth: contentWidth + (vehicleMessagesIcon.visible ? vehicleMessagesIcon.width + control.spacing : 0)
         verticalAlignment:  Text.AlignVCenter
-        text:               mainStatusText()
-        color:              qgcPal.text
+        text:               mainStatusText().toUpperCase()
+        color:              TacticalTheme.textPrimary
+        font.family:        ScreenTools.tacticalFontFamily
         font.pointSize:     ScreenTools.largeFontPointSize
+        font.bold:          true
+        font.letterSpacing: 0.8
 
         property string _commLostText:      qsTr("Comms Lost")
         property string _readyToFlyText:    qsTr("Ready")
@@ -120,12 +123,12 @@ RowLayout {
             visible:                _activeVehicle && _activeVehicle.messageCount > 0
 
             function getIconColor() {
-                let iconColor = qgcPal.text
+                let iconColor = TacticalTheme.textPrimary
                 if (_activeVehicle) {
                     if (_activeVehicle.messageTypeWarning) {
-                        iconColor = qgcPal.colorOrange
+                        iconColor = TacticalTheme.amber
                     } else if (_activeVehicle.messageTypeError) {
-                        iconColor = qgcPal.colorRed
+                        iconColor = TacticalTheme.signalRed
                     }
                 }
                 return iconColor
@@ -142,8 +145,9 @@ RowLayout {
         id:                 vtolModeLabel
         Layout.fillHeight:  true
         verticalAlignment:  Text.AlignVCenter
-        text:               _vtolInFWDFlight ? qsTr("FW(vtol)") : qsTr("MR(vtol)")
-        color:              qgcPal.text
+        text:               _vtolInFWDFlight ? "FW(VTOL)" : "MR(VTOL)"
+        color:              TacticalTheme.cyanAccent
+        font.family:        ScreenTools.monoDataFontFamily
         font.pointSize:     _vehicleInAir ? ScreenTools.largeFontPointSize : ScreenTools.defaultFontPointSize
         visible:            _activeVehicle && _activeVehicle.vtol
 

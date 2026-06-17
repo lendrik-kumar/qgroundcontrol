@@ -66,7 +66,7 @@ Item {
                 y: index * _root._hudScanSpacing
                 width: parent.width
                 height: _root._hudLineWidth
-                color: qgcPal.brandingBlue
+                color: TacticalTheme.primary
                 opacity: 0.05
             }
         }
@@ -81,14 +81,14 @@ Item {
                 anchors.centerIn: parent
                 width: _root._hudLineWidth
                 height: parent.height
-                color: qgcPal.brandingBlue
+                color: TacticalTheme.primary
                 opacity: 0.4
             }
             Rectangle {
                 anchors.centerIn: parent
                 width: parent.width
                 height: _root._hudLineWidth
-                color: qgcPal.brandingBlue
+                color: TacticalTheme.primary
                 opacity: 0.4
             }
 

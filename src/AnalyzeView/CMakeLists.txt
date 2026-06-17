@@ -28,6 +28,7 @@ qt_add_qml_module(AnalyzeViewModule
     QML_FILES
         AnalyzePage.qml
         AnalyzeView.qml
+        TargetTelemetryPanel.qml
         MAVLinkConsole/MAVLinkConsolePage.qml
         MAVLinkInspector/MAVLinkChart.qml
         MAVLinkInspector/MAVLinkMessageButton.qml

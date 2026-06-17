@@ -32,7 +32,7 @@ RowLayout {
             height:     ScreenTools.defaultFontPixelHeight * 0.75
             fillMode:   Image.PreserveAspectFit
             mipmap:     true
-            color:      qgcPal.text
+            color:      TacticalTheme.textPrimary
             source:     "/qmlimages/FlightModesComponentIcon.png"
             Layout.alignment:   Qt.AlignVCenter
         }
@@ -43,8 +43,12 @@ RowLayout {
         }
 
         QGCLabel {
-            text:               activeVehicle ? activeVehicle.flightMode : qsTr("N/A", "No data to display")
+            text:               activeVehicle ? activeVehicle.flightMode.toUpperCase() : qsTr("N/A", "No data to display")
+            font.family:        ScreenTools.tacticalFontFamily
             font.pointSize:     fontPointSize
+            font.bold:          true
+            font.letterSpacing: 0.8
+            color:              TacticalTheme.textPrimary
             Layout.alignment:   Qt.AlignCenter
 
             MouseArea {
@@ -66,11 +70,11 @@ RowLayout {
         closePolicy:    Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            color:      QGroundControl.globalPalette.window
-            radius:     4
+            color:      TacticalTheme.surfaceContainerHighest
+            radius:     0
             opacity:    0.97
             border.width: 1
-            border.color: QGroundControl.globalPalette.groupBorder
+            border.color: TacticalTheme.outlineSubtle
 
             // Top accent line
             Rectangle {
@@ -78,9 +82,9 @@ RowLayout {
                 anchors.left:   parent.left
                 anchors.right:  parent.right
                 height:         2
-                radius:         4
-                color:          QGroundControl.globalPalette.colorBlue
-                opacity:        0.9
+                radius:         0
+                color:          TacticalTheme.cyanAccent
+                opacity:        1.0
             }
         }
 

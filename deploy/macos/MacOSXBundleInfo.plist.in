@@ -37,6 +37,30 @@
     <key>CFBundleAllowMixedLocalizations</key>
     <true/>
 
+    <!-- Manually declare locales that Qt LinguistTools cannot auto-resolve (e.g. no_NO -> no) -->
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>ar</string>
+        <string>de</string>
+        <string>es</string>
+        <string>fr</string>
+        <string>id</string>
+        <string>ja</string>
+        <string>ko</string>
+        <string>nl</string>
+        <string>no</string>
+        <string>pl</string>
+        <string>pt</string>
+        <string>ru</string>
+        <string>sv</string>
+        <string>tr</string>
+        <string>uk</string>
+        <string>zh_Hans</string>
+        <string>zh_Hant</string>
+    </array>
+
+
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 
@@ -64,6 +88,9 @@
     <string>Location used for ground control station position</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Qt Multimedia for MacOS uses the camera and microphone.</string>
+
+    <key>NSSerialPortUsageDescription</key>
+    <string>Serial port access is required to connect to flight controllers and radio modems via USB.</string>
 
     <key>NSAppSleepDisabled</key>
     <true/>

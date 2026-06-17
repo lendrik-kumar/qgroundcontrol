@@ -142,10 +142,10 @@ Item {
         }
     }
 
-    // Tactical cyan search accent color
-    readonly property color _accentCyan:    qgcPal.colorBlue
-    readonly property color _warnAmber:     "#FFB300"
-    readonly property color _critCrimson:   "#FF1744"
+    // Tactical color tokens — now sourced from TacticalTheme singleton
+    readonly property color _accentCyan:    TacticalTheme.cyanAccent
+    readonly property color _warnAmber:     TacticalTheme.amber
+    readonly property color _critCrimson:   TacticalTheme.signalRed
 
     RowLayout {
         id:             header
@@ -316,7 +316,7 @@ Item {
             implicitWidth:  column === 0 ? ScreenTools.implicitCheckBoxHeight + ScreenTools.defaultFontPixelWidth
                                          : headerLabel.contentWidth + ScreenTools.defaultFontPixelWidth
             implicitHeight: headerLabel.contentHeight + ScreenTools.defaultFontPixelHeight * 0.5
-            color:          qgcPal.windowShade
+            color:          TacticalTheme.surfaceContainerHigh
 
             QGCLabel {
                 id:                     headerLabel
@@ -324,7 +324,10 @@ Item {
                 anchors.leftMargin:     ScreenTools.defaultFontPixelWidth / 2
                 anchors.verticalCenter: parent.verticalCenter
                 text:                   display
+                font.family:            ScreenTools.tacticalFontFamily
                 font.bold:              true
+                font.letterSpacing:     0.6
+                color:                  TacticalTheme.textSecondary
             }
 
             // Top border
@@ -396,7 +399,7 @@ Item {
                                          : column === 2 ? ScreenTools.defaultFontPixelWidth * 16
                                                         : label.contentWidth + ScreenTools.defaultFontPixelWidth
             implicitHeight: label.contentHeight + ScreenTools.defaultFontPixelHeight * 0.5
-            color:          row % 2 === 0 ? "transparent" : qgcPal.windowShade
+            color:          row % 2 === 0 ? "transparent" : TacticalTheme.surfaceContainer
             clip:           true
 
             // Bottom grid line
@@ -404,7 +407,7 @@ Item {
                 anchors.bottom: parent.bottom
                 width:          parent.width
                 height:         1
-                color:          qgcPal.groupBorder
+                color:          TacticalTheme.outlineSubtle
             }
 
             // Left grid line
@@ -468,7 +471,7 @@ Item {
                 color:              column == 2 && fact.defaultValueAvailable && !fact.valueEqualsDefault ? qgcPal.modifiedParamValue : qgcPal.text
                 font.bold:          column == 2 && fact.defaultValueAvailable && !fact.valueEqualsDefault
                 // Monospaced font for value column — prevents digit-jitter during live telemetry updates
-                font.family:        column == 2 ? "Courier New" : font.family
+                font.family:        column == 2 ? ScreenTools.monoDataFontFamily : ScreenTools.tacticalFontFamily
                 maximumLineCount:   1
                 elide:              column == 2 ? Text.ElideRight : Text.ElideNone
 
@@ -517,8 +520,8 @@ Item {
         anchors.bottomMargin:   ScreenTools.defaultFontPixelHeight * 1.5
         width:                  fabLabel.implicitWidth + ScreenTools.defaultFontPixelWidth * 3
         height:                 ScreenTools.defaultFontPixelHeight * 2.2
-        radius:                 ScreenTools.defaultFontPixelHeight * 0.3
-        color:                  _root._accentCyan
+        radius:                 0       // tactical: sharp corners
+        color:                  TacticalTheme.cyanAccent
         visible:                _root._hasPendingChanges
         z:                      10
 

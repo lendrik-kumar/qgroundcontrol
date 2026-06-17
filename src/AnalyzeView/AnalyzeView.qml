@@ -6,7 +6,7 @@ import QGroundControl.Controls
 
 Rectangle {
     id:     _root
-    color:  qgcPal.window
+    color:  TacticalTheme.surfaceBase
     z:      QGroundControl.zOrderTopMost
 
     readonly property real  _defaultTextHeight:     ScreenTools.defaultFontPixelHeight
@@ -126,7 +126,8 @@ Rectangle {
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
         width:                  1
-        color:                  qgcPal.windowShade
+        color:                  TacticalTheme.cyanAccent
+        opacity:                0.3
     }
 
     Item {

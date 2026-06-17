@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Templates as T
+import QtQuick.Effects
 
 import QGroundControl
 import QGroundControl.Controls
@@ -14,7 +15,7 @@ T.ComboBox {
     padding: ScreenTools.comboBoxPadding
     spacing: ScreenTools.defaultFontPixelWidth
     font.pointSize: ScreenTools.defaultFontPointSize
-    font.family: ScreenTools.normalFontFamily
+    font.family: ScreenTools.monoDataFontFamily
     implicitWidth: Math.max(background.implicitWidth,
                             (control.sizeToContents ? _largestTextWidth : contentItem.implicitWidth) + leftPadding + rightPadding + padding)
     implicitHeight: Math.max(background.implicitHeight,
@@ -80,13 +81,16 @@ T.ComboBox {
 
         contentItem: Text {
             text: _text
-            font: control.font
-            color: control.currentIndex === index ? qgcPal.buttonHighlightText : qgcPal.buttonText
+            font.family: control.font.family
+            font.pointSize: control.font.pointSize * 0.9
+            color: control.currentIndex === index ? TacticalTheme.primary : TacticalTheme.textPrimary
             verticalAlignment: Text.AlignVCenter
         }
 
         background: Rectangle {
-            color: control.currentIndex === index ? qgcPal.buttonHighlight : qgcPal.button
+            color: control.highlightedIndex === index ? TacticalTheme.surfaceContainerHighest : TacticalTheme.surfaceContainer
+            border.width: control.currentIndex === index ? 1 : 0
+            border.color: TacticalTheme.primary
         }
 
         highlighted: control.highlightedIndex === index
@@ -96,32 +100,49 @@ T.ComboBox {
         anchors.rightMargin: control.padding
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        height: ScreenTools.defaultFontPixelWidth
+        height: ScreenTools.defaultFontPixelWidth * 0.8
         width: height
         source: "/qmlimages/arrow-down.png"
-        color: qgcPal.buttonText
+        color: TacticalTheme.primary
     }
 
     // The label of the button
     contentItem: QGCLabel {
         id: text
         text: control.alternateText === "" ? control.currentText : control.alternateText
-        font: control.font
-        color: qgcPal.buttonText
+        font.family: control.font.family
+        font.pointSize: control.font.pointSize
+        color: TacticalTheme.primary
         elide: Text.ElideRight
     }
 
     background: Rectangle {
-        color: qgcPal.button
-        border.color: qgcPal.buttonBorder
+        color:        "transparent"
+        border.color: TacticalTheme.outlineSubtle
         border.width: _showBorder ? 1 : 0
-        radius: ScreenTools.defaultBorderRadius
+        radius:       0
 
+        // Hover fill
         Rectangle {
             anchors.fill: parent
-            color: qgcPal.buttonHighlight
-            opacity: _showHighlight ? 1 : control.enabled && control.hovered ? .2 : 0
-            radius: parent.radius
+            color: TacticalTheme.primary
+            opacity: _showHighlight ? 0.15 : control.enabled && control.hovered ? 0.08 : 0
+        }
+
+        // Active bottom underline
+        Rectangle {
+            anchors.left:   parent.left
+            anchors.right:  parent.right
+            anchors.bottom: parent.bottom
+            height:         1
+            color:          TacticalTheme.primary
+            visible:        _showBorder || control.activeFocus
+            layer.enabled:  control.activeFocus
+            layer.effect:   MultiEffect {
+                shadowEnabled: true
+                shadowColor: TacticalTheme.glowCyan
+                shadowBlur: 1.0
+            }
         }
     }
 
@@ -150,14 +171,15 @@ T.ComboBox {
                 width: parent.width
                 height: parent.height
                 color: "transparent"
-                border.color: qgcPal.text
+                border.color: TacticalTheme.primary
+                border.width: 1
             }
 
             T.ScrollIndicator.vertical: ScrollIndicator { }
         }
 
         background: Rectangle {
-            color: qgcPal.window
+            color: TacticalTheme.surfaceContainer
         }
     }
 }

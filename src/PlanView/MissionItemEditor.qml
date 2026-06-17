@@ -20,16 +20,16 @@ Rectangle {
 
     id:             _root
     height:         _currentItem ? (editorLoader.y + editorLoader.height + _innerMargin) : (topRowLayout.y + topRowLayout.height + _margin)
-    color:          _currentItem ? qgcPal.buttonHighlight : qgcPal.windowShade
-    radius:         _radius
+    color:          _currentItem ? TacticalTheme.surfaceContainerHighest : TacticalTheme.surfaceContainer
+    radius:         0
     opacity:        _currentItem ? 1.0 : 0.7
-    border.width:   _readyForSave ? 0 : 2
-    border.color:   qgcPal.warningText
+    border.width:   _readyForSave ? (_currentItem ? 1 : 0) : 2
+    border.color:   _readyForSave ? TacticalTheme.primary : TacticalTheme.amber
 
     property var    _masterController:          missionItem.masterController
     property var    _missionController:         _masterController.missionController
     property bool   _currentItem:               missionItem.isCurrentItem
-    property color  _outerTextColor:            _currentItem ? qgcPal.buttonHighlightText : qgcPal.text
+    property color  _outerTextColor:            _currentItem ? TacticalTheme.primary : TacticalTheme.textPrimary
     property bool   _noMissionItemsAdded:       _missionController.visualItems ? _missionController.visualItems.count <= 1 : true
     property real   _sectionSpacer:             ScreenTools.defaultFontPixelWidth / 2  // spacing between section headings
     property bool   _singleComplexItem:         _missionController.complexMissionItems.length === 1
@@ -113,18 +113,18 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width:                  _hamburgerSize
             height:                 width
-            border.width:           1
-            border.color:           qgcPal.warningText
-            color:                  "white"
-            radius:                 width / 2
+            border.width:           2
+            border.color:           TacticalTheme.amber
+            color:                  "transparent"
+            radius:                 0
             visible:                !_readyForSave
 
             QGCLabel {
                 id:                 readyForSaveLabel
                 anchors.centerIn:   parent
                 //: Indicator in Plan view to show mission item is not ready for save/send
-                text:               qsTr("?")
-                color:              qgcPal.warningText
+                text:               qsTr("!")
+                color:              TacticalTheme.amber
                 font.pointSize:     ScreenTools.smallFontPointSize
             }
         }
@@ -138,7 +138,7 @@ Rectangle {
             fillMode:               Image.PreserveAspectFit
             mipmap:                 true
             smooth:                 true
-            color:                  qgcPal.buttonHighlightText
+            color:                  TacticalTheme.signalRed
             visible:                _currentItem && missionItem.sequenceNumber !== 0
             source:                 "/res/TrashDelete.svg"
 
@@ -170,7 +170,7 @@ Rectangle {
                     fillMode:           Image.PreserveAspectFit
                     smooth:             true
                     antialiasing:       true
-                    color:              qgcPal.text
+                    color:              TacticalTheme.textPrimary
                     source:             "/qmlimages/arrow-down.png"
                 }
             }
@@ -207,6 +207,8 @@ Rectangle {
             visible:                !missionItem.isCurrentItem || !missionItem.isSimpleItem || _waypointsOnlyMode || missionItem.isTakeoffItem
             verticalAlignment:      Text.AlignVCenter
             text:                   missionItem.commandName
+            font.family:            ScreenTools.monoDataFontFamily
+            font.bold:              true
             color:                  _outerTextColor
         }
     }
@@ -310,7 +312,7 @@ Rectangle {
         sourceSize.height:      _hamburgerSize
         source:                 "qrc:/qmlimages/Hamburger.svg"
         visible:                missionItem.isCurrentItem && missionItem.sequenceNumber !== 0
-        color:                  qgcPal.buttonHighlightText
+        color:                  TacticalTheme.primary
 
         QGCMouseArea {
             fillItem:   hamburger

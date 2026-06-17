@@ -36,63 +36,71 @@ Button {
         id: backRect
         implicitWidth: ScreenTools.implicitButtonWidth
         implicitHeight: ScreenTools.implicitButtonHeight
-        // Transparent base — active state shown via bottom neon accent bar
-        color: _showHighlight ? Qt.rgba(0, 0.85, 1.0, 0.10) : (control.enabled && control.hovered ? qgcPal.toolStripHoverColor : qgcPal.button)
+        color: "transparent"
         border.width: 0
 
-        // Neon bottom-border active indicator (modern HUD tab style)
+        // Hover fill
+        Rectangle {
+            anchors.fill: parent
+            color:        TacticalTheme.cyanAccent
+            opacity:      !control._showHighlight && control.enabled && control.hovered ? 0.08 : 0
+            Behavior on opacity { NumberAnimation { duration: TacticalTheme.durationFast } }
+        }
+
+        // Active: cyan bottom underline
         Rectangle {
             anchors.left:   parent.left
             anchors.right:  parent.right
             anchors.bottom: parent.bottom
             height:         2
-            color:          qgcPal.colorBlue
+            color:          TacticalTheme.cyanAccent
             visible:        control.checked
-            opacity:        0.9
+            opacity:        0.95
         }
 
         // Subtle right separator between inactive tabs
         Rectangle {
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.topMargin: _vertMargin
+            anchors.right:        parent.right
+            anchors.top:          parent.top
+            anchors.bottom:       parent.bottom
+            anchors.topMargin:    _vertMargin
             anchors.bottomMargin: _vertMargin
-            width: 1
-            color: Qt.darker(qgcPal.buttonText, 1.5)
-            visible: control._showSeparator
+            width:                1
+            color:                TacticalTheme.outlineSubtle
+            visible:              control._showSeparator
 
             property real _vertMargin: ScreenTools.defaultFontPixelHeight * 0.25
         }
     }
 
     contentItem: Item {
-        implicitWidth: _showIcon ? icon.width : text.implicitWidth
+        implicitWidth:  _showIcon ? icon.width : text.implicitWidth
         implicitHeight: _showIcon ? icon.height : text.implicitHeight
         baselineOffset: text.y + text.baselineOffset
 
         QGCColoredImage {
-            id: icon
-            anchors.centerIn: parent
-            source: control.icon.source
-            height: source === "" ? 0 : ScreenTools.defaultFontPixelHeight
-            width: height
-            color: _showHighlight ? qgcPal.buttonHighlightText : qgcPal.buttonText
-            fillMode: Image.PreserveAspectFit
+            id:                icon
+            anchors.centerIn:  parent
+            source:            control.icon.source
+            height:            source === "" ? 0 : ScreenTools.defaultFontPixelHeight
+            width:             height
+            color:             control.checked ? TacticalTheme.cyanAccent : TacticalTheme.textSecondary
+            fillMode:          Image.PreserveAspectFit
             sourceSize.height: height
-            visible: _showIcon
+            visible:           _showIcon
         }
 
         Text {
-            id: text
+            id:               text
             anchors.centerIn: parent
-            antialiasing: true
-            text: control.text
-            font.pointSize: control.pointSize
-            font.family: ScreenTools.normalFontFamily
-            font.letterSpacing: 0.5
-            color: _showHighlight ? qgcPal.colorBlue : qgcPal.buttonText
-            visible: !_showIcon
+            antialiasing:     true
+            text:             control.text.toUpperCase()
+            font.pointSize:   control.pointSize * 0.9
+            font.family:      ScreenTools.tacticalFontFamily
+            font.bold:        control.checked
+            font.letterSpacing: 0.7
+            color:            control.checked ? TacticalTheme.cyanAccent : TacticalTheme.textSecondary
+            visible:          !_showIcon
         }
     }
 }

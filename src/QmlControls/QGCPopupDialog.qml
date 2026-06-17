@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import QtQuick.Effects
 
 import QGroundControl
 import QGroundControl.Controls
@@ -85,8 +86,8 @@ Popup {
 
         Rectangle {
             anchors.fill: parent
-            color: _qgcPal.window
-            opacity: 0.85 // Darker tactical overlay backdrop
+            color:        "#0F1419"
+            opacity:      0.75   // tactical dark scrim
         }
 
         onClicked: {
@@ -221,28 +222,45 @@ Popup {
         id:             popupBorderBase
         x:              mainLayout.x - _contentMargin
         y:              mainLayout.y - _contentMargin
-        width:          mainLayout.width + _contentMargin * 2
+        width:          mainLayout.width  + _contentMargin * 2
         height:         mainLayout.height + _contentMargin * 2
-        color:          _qgcPal.windowShade
-        radius:         0 // Sharp tactical edges
+        color:          TacticalTheme.surfaceContainerHigh
+        radius:         0         // Sharp tactical edges
         border.width:   root.criticalAlert ? 2 : 1
-        border.color:   root.criticalAlert ? "#FF1744" : _qgcPal.colorOrange
-        opacity:        0.95
+        border.color:   root.criticalAlert ? TacticalTheme.signalRed : TacticalTheme.primary
+        opacity:        0.97
+        layer.enabled:  true
+        layer.effect:   MultiEffect {
+            shadowEnabled: true
+            shadowColor: root.criticalAlert ? TacticalTheme.glowRed : TacticalTheme.glowCyan
+            shadowBlur: 1.0
+        }
 
+        // Outer glow layer
         Rectangle {
-            anchors.fill: parent
-            radius: parent.radius
-            color: "transparent"
-            border.width: root.criticalAlert ? 2 : 1
-            border.color: root.criticalAlert ? "#FF1744" : _qgcPal.colorOrange
-            opacity: 0.35
-            
+            anchors.fill:  parent
+            radius:        parent.radius
+            color:         "transparent"
+            border.width:  1
+            border.color:  root.criticalAlert ? TacticalTheme.signalRed : TacticalTheme.primary
+            opacity:       root.criticalAlert ? 0.5 : 0.2
+
             SequentialAnimation on opacity {
-                loops: Animation.Infinite
+                loops:   Animation.Infinite
                 running: root.opened && root.criticalAlert
-                NumberAnimation { to: 1.0; duration: 600; easing.type: Easing.InOutSine }
+                NumberAnimation { to: 0.9; duration: 600; easing.type: Easing.InOutSine }
                 NumberAnimation { to: 0.2; duration: 600; easing.type: Easing.InOutSine }
             }
+        }
+
+        // Top accent line
+        Rectangle {
+            anchors.top:   parent.top
+            anchors.left:  parent.left
+            anchors.right: parent.right
+            height:        2
+            color:         root.criticalAlert ? TacticalTheme.signalRed : TacticalTheme.primary
+            opacity:       0.9
         }
     }
 
@@ -284,14 +302,16 @@ Popup {
             Layout.fillWidth:       true
             Layout.preferredWidth:  Math.min(maxAvailableWidth, totalContentWidth)
             Layout.preferredHeight: Math.min(maxAvailableHeight, totalContentHeight)
-            color:                  _qgcPal.window
-            border.width:           1
-            border.color:           _qgcPal.buttonBorder
+
 
             property real totalContentWidth:    dialogContentParent.childrenRect.width + _contentMargin * 2
             property real totalContentHeight:   dialogContentParent.childrenRect.height + _contentMargin * 2
             property real maxAvailableWidth:    mainWindow.width - _contentMargin * 4
             property real maxAvailableHeight:   mainWindow.height - titleRowLayout.height - _contentMargin * 5
+
+            color:        TacticalTheme.surfaceContainer
+            border.color: TacticalTheme.outlineSubtle
+            border.width: 1
 
             QGCFlickable {
                 anchors.margins:    _contentMargin

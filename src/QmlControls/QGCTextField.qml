@@ -1,49 +1,50 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 
 import QGroundControl
 import QGroundControl.Controls
 
+/// Aero-Tactical QGCTextField
+/// Bottom-border only (no box), monospace data font, block cursor, validation error in red.
 TextField {
-    id:                 control
+    id: control
+
     color:              qgcPal.textFieldText
-    selectionColor:     qgcPal.textFieldText
-    selectedTextColor:  qgcPal.textField
+    selectionColor:     TacticalTheme.cyanAccent
+    selectedTextColor:  TacticalTheme.textOnAccent
     activeFocusOnPress: true
     antialiasing:       true
     font.pointSize:     ScreenTools.defaultFontPointSize
-    font.family:        ScreenTools.normalFontFamily
-    inputMethodHints:   numericValuesOnly && !ScreenTools.isiOS ?
-                            Qt.ImhFormattedNumbersOnly:  // Forces use of virtual numeric keyboard instead of full keyboard
-                            Qt.ImhNone                   // iOS numeric keyboard has no done button, we can't use it.
-    leftPadding:        _marginPadding
-    rightPadding:       _marginPadding + unitsHelpLayout.width
-    topPadding:         _marginPadding
-    bottomPadding:      _marginPadding
+    font.family:        ScreenTools.monoDataFontFamily    // Space Mono for data inputs
+    inputMethodHints:   numericValuesOnly && !ScreenTools.isiOS ? Qt.ImhFormattedNumbersOnly : Qt.ImhNone
+    leftPadding:        _pad
+    rightPadding:       _pad + unitsHelpLayout.width
+    topPadding:         _pad * 0.5
+    bottomPadding:      _pad * 1.2
     EnterKey.type:      Qt.EnterKeyDone
 
-    property bool   showUnits:          false
-    property bool   showHelp:           false
-    property string unitsLabel:         ""
-    property string extraUnitsLabel:    ""
-    property bool   numericValuesOnly:  false   // true: Used as hint for mobile devices to show numeric only keyboard
-    property alias  textColor:          control.color
-    property bool   validationError:    false
+    property bool   showUnits:         false
+    property bool   showHelp:          false
+    property string unitsLabel:        ""
+    property string extraUnitsLabel:   ""
+    property bool   numericValuesOnly: false
+    property alias  textColor:         control.color
+    property bool   validationError:   false
 
-    property real _helpLayoutWidth: 0
-    property real _marginPadding:   ScreenTools.defaultFontPixelHeight / 3
+    property real _helpLayoutWidth:    0
+    property real _pad:                ScreenTools.defaultFontPixelHeight * 0.32
 
-    signal helpClicked
+    signal helpClicked()
 
-    Component.onCompleted: checkActiveFocus()
-    onActiveFocusChanged: checkActiveFocus()
+    Component.onCompleted:  checkActiveFocus()
+    onActiveFocusChanged:   checkActiveFocus()
 
     QGCPalette { id: qgcPal; colorGroupEnabled: enabled }
 
     onEditingFinished: {
         if (ScreenTools.isMobile) {
-            // Toss focus on mobile after Done on virtual keyboard. Prevent strange interactions.
             focus = false
         }
     }
@@ -51,34 +52,28 @@ TextField {
     function checkActiveFocus() {
         if (activeFocus) {
             selectAll()
-            if (validationError) {
-                validationToolTip.visible = true
-            }
+            if (validationError) validationToolTip.visible = true
         } else {
             validationToolTip.visible = false
         }
     }
 
-    function showValidationError(errorString, originalValidValue = undefined, preventViewSiwtch = true) {
+    function showValidationError(errorString, originalValidValue = undefined, preventViewSwitch = true) {
         validationToolTip.text = errorString
         validationToolTip.originalValidValue = originalValidValue
         validationToolTip.visible = true
         if (!validationError) {
             validationError = true
-            if (preventViewSiwtch) {
-                globals.validationErrorCount++
-            }
+            if (preventViewSwitch) globals.validationErrorCount++
         }
     }
 
-    function clearValidationError(preventViewSiwtch = true) {
+    function clearValidationError(preventViewSwitch = true) {
         validationToolTip.visible = false
         validationToolTip.originalValidValue = undefined
         if (validationError) {
             validationError = false
-            if (preventViewSiwtch) {
-                globals.validationErrorCount--
-            }
+            if (preventViewSwitch) globals.validationErrorCount--
         }
     }
 
@@ -86,44 +81,61 @@ TextField {
         implicitWidth:  ScreenTools.implicitTextFieldWidth
         implicitHeight: ScreenTools.implicitTextFieldHeight
 
-        Rectangle {
-            id: baseFill
-            anchors.fill: parent
-            radius: Math.max(2, ScreenTools.defaultBorderRadius - 2)
-            color: qgcPal.textField
-        }
-
+        // Transparent fill — completely hollow
         Rectangle {
             anchors.fill: parent
-            radius: ScreenTools.defaultBorderRadius
-            color: "transparent"
-            border.width: 1
-            border.color: control.activeFocus ? qgcPal.buttonHighlight : qgcPal.buttonBorder
-            opacity: control.activeFocus ? 0.9 : 0.35
+            color:        "transparent"
         }
 
+        // Bottom border only — the defining feature of this component
         Rectangle {
-            anchors.fill: parent
-            radius: ScreenTools.defaultBorderRadius
-            color: "transparent"
-            border.width: control.validationError ? 2 : 0
-            border.color: qgcPal.colorRed
-            visible: control.validationError
+            id:             bottomBorder
+            anchors.left:   parent.left
+            anchors.right:  parent.right
+            anchors.bottom: parent.bottom
+            height:         1
+            color:          control.validationError
+                                ? TacticalTheme.signalRed
+                                : control.activeFocus
+                                  ? TacticalTheme.primary
+                                  : TacticalTheme.outlineSubtle
+            opacity:        control.activeFocus ? 1.0 : 0.6
+
+            Behavior on color { ColorAnimation { duration: TacticalTheme.durationFast } }
         }
 
+        // Active focus highlight glow
+        Rectangle {
+            anchors.left:   parent.left
+            anchors.right:  parent.right
+            anchors.bottom: parent.bottom
+            height:         1
+            color:          "transparent"
+            border.width:   1
+            border.color:   control.validationError ? TacticalTheme.signalRed : TacticalTheme.primary
+            opacity:        control.activeFocus ? 0.6 : 0
+            layer.enabled:  true
+            layer.effect:   MultiEffect {
+                shadowEnabled: true
+                shadowColor: control.validationError ? TacticalTheme.glowRed : TacticalTheme.glowCyan
+                shadowBlur: 1.0
+            }
+            Behavior on opacity { NumberAnimation { duration: TacticalTheme.durationFast } }
+        }
+
+        // Units / help row
         RowLayout {
             id:                     unitsHelpLayout
             anchors.top:            parent.top
             anchors.bottom:         parent.bottom
             anchors.right:          parent.right
-            anchors.rightMargin:    control.activeFocus ? 2 : control._marginPadding
+            anchors.rightMargin:    control.activeFocus ? 2 : control._pad
             spacing:                ScreenTools.defaultFontPixelWidth / 4
             layoutDirection:        Qt.RightToLeft
 
             Component.onCompleted:  control._helpLayoutWidth = unitsHelpLayout.width
             onWidthChanged:         control._helpLayoutWidth = unitsHelpLayout.width
 
-            // Help button
             Rectangle {
                 id:                     helpButton
                 Layout.margins:         2
@@ -136,41 +148,39 @@ TextField {
                 visible:                control.showHelp && control.activeFocus
 
                 QGCLabel {
-                    id:                 helpLabel
-                    anchors.centerIn:   parent
-                    color:              qgcPal.textField
-                    text:               qsTr("?")
+                    id:              helpLabel
+                    anchors.centerIn: parent
+                    color:           qgcPal.textField
+                    text:            "?"
+                    font.family:     ScreenTools.tacticalFontFamily
+                    font.pointSize:  ScreenTools.smallFontPointSize * 0.8
                 }
-
             }
 
-            // Extra units
             Text {
-                Layout.alignment:   Qt.AlignVCenter
-                text:               control.extraUnitsLabel
-                font.pointSize:     ScreenTools.smallFontPointSize
-                font.family:        ScreenTools.normalFontFamily
-                antialiasing:       true
-                color:              control.color
-                visible:            control.showUnits && text !== ""
+                Layout.alignment: Qt.AlignVCenter
+                text:             control.extraUnitsLabel
+                font.pointSize:   ScreenTools.smallFontPointSize
+                font.family:      ScreenTools.monoDataFontFamily
+                antialiasing:     true
+                color:            TacticalTheme.textSecondary
+                visible:          control.showUnits && text !== ""
             }
 
-            // Units
             Text {
-                Layout.alignment:   Qt.AlignVCenter
-                text:               control.unitsLabel
-                font.pointSize:     control.activeFocus ? ScreenTools.smallFontPointSize : ScreenTools.defaultFontPointSize
-                font.family:        ScreenTools.normalFontFamily
-                antialiasing:       true
-                color:              control.color
-                visible:            control.showUnits && text !== ""
+                Layout.alignment: Qt.AlignVCenter
+                text:             control.unitsLabel
+                font.pointSize:   control.activeFocus ? ScreenTools.smallFontPointSize : ScreenTools.defaultFontPointSize
+                font.family:      ScreenTools.monoDataFontFamily
+                antialiasing:     true
+                color:            TacticalTheme.textSecondary
+                visible:          control.showUnits && text !== ""
             }
         }
     }
 
     ToolTip {
         id: validationToolTip
-
         property var originalValidValue: undefined
 
         QGCMouseArea {

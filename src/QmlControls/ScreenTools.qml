@@ -120,6 +120,13 @@ Item {
 
     readonly property string normalFontFamily:      ScreenToolsController.normalFontFamily
     readonly property string fixedFontFamily:       ScreenToolsController.fixedFontFamily
+
+    // ── Jarvis typography families ────────────────────────────────────────────
+    // Primary UI font: Space Grotesk
+    // Data/mono font:  JetBrains Mono
+    // Note: Relies on system installed fonts or Qt fallbacks if missing.
+    readonly property string tacticalFontFamily:    "Space Grotesk"
+    readonly property string monoDataFontFamily:    "JetBrains Mono"
     /* This mostly works but for some reason, reflowWidths() in SetupView doesn't change size.
        I've disabled (in release builds) until I figure out why. Changes require a restart for now.
     */

@@ -14,7 +14,7 @@ ColumnLayout {
 
     property alias contentSpacing: _contentLayout.spacing
 
-    property string defaultBorderColor  : Qt.rgba(0.29, 0.49, 0.56, 0.35) // #4A7D8F at 35%
+    property string defaultBorderColor  : TacticalTheme.outlineSubtle
     property string outerBorderColor    : defaultBorderColor
 
     property real defaultHeadingPointSize:  ScreenTools.defaultFontPointSize + 1
@@ -43,10 +43,12 @@ ColumnLayout {
         visible:            heading !== ""
 
         QGCLabel {
-            text:           heading
+            text:           heading.toUpperCase()
+            font.family:    ScreenTools.tacticalFontFamily
             font.pointSize: headingPointSize
             font.bold:      true
-            color:          qgcPal.colorBlue  // sky-blue heading from palette
+            font.letterSpacing: 0.8
+            color:          TacticalTheme.primary
         }
 
         QGCLabel {
@@ -63,18 +65,19 @@ ColumnLayout {
         Layout.fillWidth:   true
         implicitWidth:      _contentLayout.implicitWidth + (showBorder ? _margins * 2 : 0)
         implicitHeight:     _contentLayout.implicitHeight + (showBorder ? _margins * 2: 0)
-        color:              qgcPal.window  // deep navy card background
+        color:              TacticalTheme.surfaceContainerLow
         border.color:       outerBorderColor
         border.width:       showBorder ? 1 : 0
-        radius:             2
+        radius:             0     // tactical: sharp corners
 
         // Left accent bracket
         Rectangle {
             anchors.left: parent.left
-            width: 3
-            height: parent.height
-            color: qgcPal.colorBlue
-            visible: showBorder
+            width:        2
+            height:       parent.height
+            color:        TacticalTheme.primary
+            visible:      showBorder
+            opacity:      0.8
         }
 
         Repeater {
@@ -85,7 +88,7 @@ ColumnLayout {
                 y:          _contentItem ? (_contentItem.y + _contentItem.height + _margins + (showBorder ? _margins : 0)) : 0
                 width:      parent.width - (showBorder ? _margins * 2 : 0)
                 height:     1
-                color:      Qt.rgba(0.29, 0.49, 0.56, 0.25)  // subtle slate dividers
+                color:      TacticalTheme.outlineSubtle
                 visible:    _contentItem ? _isContentItemVisible() : false
 
                 property var _contentItem: index < _ySortedChildren.length ? _ySortedChildren[index] : undefined

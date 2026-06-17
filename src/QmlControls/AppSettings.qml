@@ -8,7 +8,7 @@ import QGroundControl.AppSettings
 
 Rectangle {
     id:     settingsView
-    color:  qgcPal.window
+    color:  TacticalTheme.surfaceBase
     z:      QGroundControl.zOrderTopMost
 
     readonly property real _defaultTextHeight:  ScreenTools.defaultFontPixelHeight
@@ -297,20 +297,23 @@ Rectangle {
                                 if (typeof rightPanel.item.sectionVisible !== "function") return true
                                 return rightPanel.item.sectionVisible(sectionIndex)
                             }
-                            property color textColor: sectionChecked || pressed ? qgcPal.colorBlue : qgcPal.buttonText
+                            property color textColor: sectionChecked || pressed ? TacticalTheme.primary : TacticalTheme.textPrimary
                             visible: sectionMatchesSearch && sectionContentVisible
 
                             background: Rectangle {
-                                color:   sectionBtn.sectionChecked || sectionBtn.pressed ? Qt.rgba(0.42, 0.74, 0.85, 0.18) : (sectionBtn.enabled && sectionBtn.hovered ? Qt.rgba(0.42, 0.74, 0.85, 0.07) : "transparent")
-                                border.color: sectionBtn.sectionChecked || sectionBtn.pressed ? qgcPal.colorBlue : "transparent"
+                                color:   sectionBtn.sectionChecked || sectionBtn.pressed ? Qt.rgba(TacticalTheme.primary.r, TacticalTheme.primary.g, TacticalTheme.primary.b, 0.18) : (sectionBtn.enabled && sectionBtn.hovered ? Qt.rgba(TacticalTheme.primary.r, TacticalTheme.primary.g, TacticalTheme.primary.b, 0.07) : "transparent")
+                                border.color: sectionBtn.sectionChecked || sectionBtn.pressed ? TacticalTheme.primary : "transparent"
                                 border.width: 1
-                                radius:  2
+                                radius:  0
                             }
 
                             contentItem: QGCLabel {
-                                text:  modelData
+                                text:  modelData.toUpperCase()
                                 color: sectionBtn.textColor
+                                font.family: ScreenTools.monoDataFontFamily
                                 font.pointSize: ScreenTools.defaultFontPointSize * 0.9
+                                font.letterSpacing: 0.6
+                                font.bold: true
                                 horizontalAlignment: Text.AlignLeft
                                 elide: Text.ElideRight
                             }
@@ -337,7 +340,8 @@ Rectangle {
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
         width:                  1
-        color:                  qgcPal.windowShade
+        color:                  TacticalTheme.primary
+        opacity:                0.3
     }
 
     //-- Panel Contents

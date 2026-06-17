@@ -475,15 +475,15 @@ Item {
                 readOnly:       true
                 visible:        !orientationCalArea.visible
                 text:           statusTextAreaDefaultText
-                color:          qgcPal.text
-                background: Rectangle { color: qgcPal.windowShade }
+                color:          TacticalTheme.textPrimary
+                background: Rectangle { color: TacticalTheme.surfaceContainer }
             }
 
             Rectangle {
                 id:         orientationCalArea
                 anchors.fill: parent
                 visible:    controller.showOrientationCalArea || _showOrientationPreview
-                color:      qgcPal.windowShade
+                color:      TacticalTheme.surfaceContainerHighest
 
                 QGCLabel {
                     id:                 orientationCalAreaHelpText

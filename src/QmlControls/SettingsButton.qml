@@ -75,7 +75,7 @@ Button {
             color:                  control.textColor
             font.family:            ScreenTools.fixedFontFamily
             font.bold:              true
-            font.pixelSize:         ScreenTools.defaultFontPixelSize * 0.9
+            font.pixelSize:         Math.round(ScreenTools.defaultFontPixelSize * 0.9)
             horizontalAlignment:    QGCLabel.AlignLeft
         }
 

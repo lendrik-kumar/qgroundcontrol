@@ -209,8 +209,10 @@ Node {
                 target: _camera
 
                 QGCLabel {
-                    color: "black"
+                    color: TacticalTheme.cyanAccent
                     font.pixelSize: 20
+                    font.family: ScreenTools.monoDataFontFamily
+                    font.bold: true
                     text: (model.itemName === "W") ? String(model.index) : model.itemName
                 }
             }

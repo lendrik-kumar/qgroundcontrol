@@ -47,11 +47,11 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: qgcPal.windowShade
-        opacity: 0.18
-        radius: ScreenTools.defaultBorderRadius
+        color:        TacticalTheme.surfaceContainer
+        opacity:      0.9
+        radius:       0
         border.width: 1
-        border.color: qgcPal.buttonBorder
+        border.color: TacticalTheme.cyanAccent
     }
 
     Component.onCompleted: {
@@ -96,8 +96,10 @@ Item {
                 QGCLabel {
                     Layout.fillWidth:   true
                     wrapMode:           Text.WordWrap
-                    text:               qsTr("Disabled while the vehicle is %1").arg(_disableReason)
-                    color:              qgcPal.warningText
+                    text:               qsTr("Disabled while the vehicle is %1").arg(_disableReason).toUpperCase()
+                    font.family:        ScreenTools.tacticalFontFamily
+                    font.letterSpacing: 0.8
+                    color:              TacticalTheme.signalRed
                     visible:            !setupView.enabled && !ScreenTools.isShortScreen
                 }
             }
@@ -114,8 +116,8 @@ Item {
         Rectangle {
             visible:            !setupView.enabled
             anchors.fill:       parent
-            color:              "black"
-            opacity:            0.5
+            color:              TacticalTheme.surfaceBase
+            opacity:            0.75
         }
     }
 }

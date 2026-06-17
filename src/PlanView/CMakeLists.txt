@@ -34,6 +34,7 @@ qt_add_qml_module(PlanViewModule
         PlanTreeView.qml
         PlanView.qml
         PlanViewRightPanel.qml
+       PreFlightPanel.qml
         RallyPointEditorHeader.qml
         RallyPointItemEditor.qml
         RallyPointMapVisuals.qml

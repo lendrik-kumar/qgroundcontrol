@@ -18,7 +18,7 @@ Canvas {
     property bool   small:                  !checked
     property bool   child:                  false
     property bool   highlightSelected:      false
-    property var    color:                  checked ? qgcPal.colorGreen : (child ? qgcPal.mapIndicatorChild : qgcPal.mapIndicator)
+    property var    color:                  checked ? TacticalTheme.primary : (child ? TacticalTheme.surfaceContainerHigh : TacticalTheme.surfaceContainerHighest)
     property real   anchorPointX:           _height / 2
     property real   anchorPointY:           _height / 2
     property bool   specifiesCoordinate:    true
@@ -79,20 +79,20 @@ Canvas {
         anchors.leftMargin:     -((_labelMargin * 2) + indicator.width)
         anchors.rightMargin:    -(_labelMargin * 2)
         anchors.fill:           labelControlLabel
-        color:                  qgcPal.windowShade
-        opacity:                0.85
-        radius:                 _labelRadius
+        color:                  TacticalTheme.surfaceContainer
+        opacity:                0.9
+        radius:                 0
         visible:                _label.length !== 0 && !small
         border.width:           1
-        border.color:           qgcPal.buttonBorder
+        border.color:           TacticalTheme.outlineSubtle
 
         Rectangle {
             anchors.fill: parent
-            radius: parent.radius
+            radius: 0
             color: "transparent"
             border.width: 1
-            border.color: qgcPal.brandingBlue
-            opacity: 0.25
+            border.color: TacticalTheme.primary
+            opacity: checked ? 0.8 : 0.0
         }
     }
 
@@ -140,7 +140,8 @@ Canvas {
             anchors.fill:           parent
             horizontalAlignment:    Text.AlignHCenter
             verticalAlignment:      Text.AlignVCenter
-            color:                  qgcPal.text
+            color:                  TacticalTheme.textPrimary
+            font.family:            ScreenTools.monoDataFontFamily
             font.pointSize:         ScreenTools.defaultFontPointSize
             font.weight:            Font.Bold
             fontSizeMode:           Text.Fit

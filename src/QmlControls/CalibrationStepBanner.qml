@@ -15,9 +15,9 @@ Item {
     property int currentStep: 1 // 1-indexed
     property var stepLabels: [] // e.g. ["Orientation", "Compass", "Accel"]
 
-    readonly property color _colorActive: qgcPal.colorBlue
-    readonly property color _colorPending: "#0B0F19"
-    readonly property color _colorBorder: Qt.rgba(0.42, 0.74, 0.85, 0.40) // 40% opacity cyan
+    readonly property color _colorActive: TacticalTheme.cyanAccent
+    readonly property color _colorPending: TacticalTheme.surfaceContainerHighest
+    readonly property color _colorBorder: TacticalTheme.outlineSubtle
 
     RowLayout {
         anchors.centerIn: parent
@@ -59,7 +59,7 @@ Item {
                     anchors.centerIn: parent
                     width: ScreenTools.defaultFontPixelHeight * 1.5
                     height: width
-                    radius: width / 2
+                    radius: 0
                     color: isActive || isCompleted ? _root._colorActive : _root._colorPending
                     border.color: isActive || isCompleted ? _root._colorActive : _root._colorBorder
                     border.width: 2
@@ -87,7 +87,8 @@ Item {
                         visible: !isCompleted
                         anchors.centerIn: parent
                         text: (index + 1).toString()
-                        color: isActive ? "#0B0F19" : _root._colorBorder
+                        color: isActive ? TacticalTheme.surfaceBase : _root._colorBorder
+                        font.family: ScreenTools.monoDataFontFamily
                         font.pointSize: ScreenTools.smallFontPointSize
                         font.bold: true
                     }
@@ -99,9 +100,10 @@ Item {
                     anchors.topMargin: ScreenTools.defaultFontPixelHeight * 0.3
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: _root.stepLabels.length > index ? _root.stepLabels[index] : ""
-                    font.family: "Courier New"
+                    font.family: ScreenTools.tacticalFontFamily
+                    font.letterSpacing: 0.5
                     font.pointSize: ScreenTools.smallFontPointSize * 0.9
-                    color: isActive ? _root._colorActive : (isCompleted ? _qgcPal.text : _root._colorBorder)
+                    color: isActive ? _root._colorActive : (isCompleted ? TacticalTheme.textPrimary : _root._colorBorder)
                 }
             }
         }

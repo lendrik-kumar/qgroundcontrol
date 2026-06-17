@@ -27,7 +27,7 @@ SetupPage {
 
             // User visible strings
             readonly property string title:             qsTr("Firmware Setup") // Popup dialog title
-            readonly property string highlightPrefix:   "<font color=\"" + qgcPal.warningText + "\">"
+            readonly property string highlightPrefix:   "<font color=\"" + TacticalTheme.amber + "\">"
             readonly property string highlightSuffix:   "</font>"
             readonly property string welcomeText:       qsTr("%1 can upgrade the firmware on Pixhawk devices and SiK Radios.").arg(QGroundControl.appName)
             readonly property string welcomeTextSingle: qsTr("Update the autopilot firmware to the latest version")
@@ -547,10 +547,10 @@ SetupPage {
                 font.pointSize:     ScreenTools.defaultFontPointSize
                 textFormat:         TextEdit.RichText
                 text:               _singleFirmwareMode ? welcomeTextSingle : welcomeText
-                color:              qgcPal.text
+                color:              TacticalTheme.textPrimary
 
                 background: Rectangle {
-                    color: qgcPal.windowShade
+                    color: TacticalTheme.surfaceContainer
                 }
             }
 

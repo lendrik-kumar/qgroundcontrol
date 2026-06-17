@@ -4,93 +4,101 @@ import QtQuick.Controls
 import QGroundControl
 import QGroundControl.Controls
 
-/// Kinetic Primary Flight Display (PFD) Altitude Tape Ladder
+/// Aero-Tactical Altitude Tape Ladder
+/// Dark glass panel, neon cyan tick marks, Space Mono readout, no rounded corners
 Item {
     id: _root
-    width: ScreenTools.defaultFontPixelWidth * 8
+    width:  ScreenTools.defaultFontPixelWidth * 8
     height: ScreenTools.defaultFontPixelHeight * 16
-    clip: true
+    clip:   true
 
-    property var activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
-    property real altitude: activeVehicle && activeVehicle.altitudeRelative && !isNaN(activeVehicle.altitudeRelative.value) ? activeVehicle.altitudeRelative.value : 0.0
+    property var  activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
+    property real altitude:      activeVehicle && activeVehicle.altitudeRelative && !isNaN(activeVehicle.altitudeRelative.value)
+                                     ? activeVehicle.altitudeRelative.value : 0.0
 
-    // Smooth easing for kinetic scrolling (no geometry layout reflows)
     property real _smoothedAlt: altitude
     Behavior on _smoothedAlt {
         NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
     }
 
-    // Tape calculations
-    readonly property int _tickInterval: 5
-    readonly property real _pixelsPerUnit: ScreenTools.defaultFontPixelHeight * 0.8
-    // Find the nearest tick mark below current altitude
-    property int _baseAlt: Math.floor(_smoothedAlt / _tickInterval) * _tickInterval
-    property real _pixelOffset: (_smoothedAlt - _baseAlt) * _pixelsPerUnit
+    readonly property int  _tickInterval:   5
+    readonly property real _pixelsPerUnit:  ScreenTools.defaultFontPixelHeight * 0.8
+    property int  _baseAlt:                 Math.floor(_smoothedAlt / _tickInterval) * _tickInterval
+    property real _pixelOffset:             (_smoothedAlt - _baseAlt) * _pixelsPerUnit
 
-    // Semi-transparent obsidian background
+    QGCPalette { id: qgcPal }
+
+    // ── Glass background ──────────────────────────────────────────────────────
     Rectangle {
-        anchors.fill: parent
-        color: "#0B0F19"
-        opacity: 0.85
-        border.color: Qt.rgba(0.42, 0.74, 0.85, 0.20) // 20% opacity cyan
-        border.width: 1
+        anchors.fill:  parent
+        color:         TacticalTheme.surfaceContainer
+        opacity:       TacticalTheme.opacityGlass
+        border.color:  TacticalTheme.primary
+        border.width:  1
+        radius:        0    // sharp tactical corners
     }
 
-    // Sliding Tape
+    // ── Right edge accent ─────────────────────────────────────────────────────
+    Rectangle {
+        anchors.top:    parent.top
+        anchors.bottom: parent.bottom
+        anchors.right:  parent.right
+        width:          2
+        color:          TacticalTheme.primary
+        opacity:        0.6
+    }
+
+    // ── Sliding tape ──────────────────────────────────────────────────────────
     Item {
         anchors.fill: parent
-        
-        // Render ticks above and below the center
+
         Repeater {
             model: 15
             Item {
-                // index 0 to 14. Center is 7.
                 property int val: _root._baseAlt + (index - 7) * _root._tickInterval
-                width: parent.width
+                width:  parent.width
                 height: 1
-                
-                // Position relative to center, minus the continuous sub-interval offset
-                y: parent.height / 2 - ((index - 7) * _root._tickInterval * _root._pixelsPerUnit) + _root._pixelOffset
+                y:      parent.height / 2 - ((index - 7) * _root._tickInterval * _root._pixelsPerUnit) + _root._pixelOffset
 
-                // Graduation Tick
+                // Tick mark — major (10s) vs minor (5s)
                 Rectangle {
                     anchors.left: parent.left
-                    width: val % 10 === 0 ? ScreenTools.defaultFontPixelWidth * 1.5 : ScreenTools.defaultFontPixelWidth * 0.8
+                    width:  val % 10 === 0 ? ScreenTools.defaultFontPixelWidth * 2.0 : ScreenTools.defaultFontPixelWidth * 1.0
                     height: val % 10 === 0 ? 2 : 1
-                    color: qgcPal.colorBlue
+                    color:  TacticalTheme.primary
+                    opacity: val % 10 === 0 ? 0.9 : 0.45
                 }
 
-                // Label (only on 10s)
+                // Label — only on major ticks
                 QGCLabel {
-                    anchors.left: parent.left
-                    anchors.leftMargin: ScreenTools.defaultFontPixelWidth * 2
+                    anchors.left:          parent.left
+                    anchors.leftMargin:    ScreenTools.defaultFontPixelWidth * 2.4
                     anchors.verticalCenter: parent.verticalCenter
-                    text: val.toString()
-                    font.family: "Courier New"
-                    font.pointSize: ScreenTools.smallFontPointSize
-                    font.bold: true
-                    color: qgcPal.colorBlue
-                    visible: val % 10 === 0
+                    text:          val.toString()
+                    font.family:   ScreenTools.monoDataFontFamily
+                    font.pointSize: ScreenTools.smallFontPointSize * 0.82
+                    color:         TacticalTheme.primary
+                    visible:       val % 10 === 0
                 }
             }
         }
     }
 
-    // Center Bug (Current Value)
+    // ── Center readout bug ────────────────────────────────────────────────────
     Rectangle {
         anchors.centerIn: parent
-        width: parent.width * 1.1
-        height: ScreenTools.defaultFontPixelHeight * 1.8
-        color: qgcPal.colorBlue
-        radius: ScreenTools.defaultFontPixelWidth * 0.3
-        
+        width:    parent.width + 2     // slight overshoot for pointer feel
+        height:   ScreenTools.defaultFontPixelHeight * 1.6
+        color:    TacticalTheme.primary
+        radius:   0                    // sharp corners — tactical
+
         QGCLabel {
             anchors.centerIn: parent
-            text: _root.altitude.toFixed(1)
-            font.family: "Courier New"
-            font.pointSize: ScreenTools.defaultFontPointSize * 0.9
-            font.bold: true
-            color: "#0B0F19"
+            text:             _root.altitude.toFixed(1)
+            font.family:      ScreenTools.monoDataFontFamily
+            font.pointSize:   ScreenTools.defaultFontPointSize * 0.85
+            font.bold:        true
+            color:            TacticalTheme.textOnAccent
         }
     }
 }

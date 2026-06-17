@@ -77,8 +77,8 @@ Item {
             TacticalPanelFrame {
                 Layout.fillWidth:       true
                 Layout.preferredHeight: parent.height * 0.6 - (_layoutSpacing / 2)
-                title:                  qsTr("Flight")
-                accentColor:            qgcPal.brandingBlue
+                title:                  qsTr("FLIGHT")
+                accentColor:            TacticalTheme.primary
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -102,8 +102,8 @@ Item {
             TacticalPanelFrame {
                 Layout.fillWidth:       true
                 Layout.fillHeight:      true
-                title:                  qsTr("Systems")
-                accentColor:            qgcPal.colorOrange
+                title:                  qsTr("SYS OPS")
+                accentColor:            TacticalTheme.amber
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -223,6 +223,24 @@ Item {
     TacticalActionOverlay {
         id: tacticalOverlay
         z: QGroundControl.zOrderTopMost + 2
+    }
+
+    // ── HUD Crosshair + Artificial Horizon overlay ────────────────────────────
+    FlyViewHUDOverlay {
+        id:           _hudOverlay
+        anchors.fill: parent
+        z:            QGroundControl.zOrderWidgets - 1
+        visible:      !QGroundControl.videoManager.fullScreen
+    }
+
+    // ── Tactical Bottom Action Bar ────────────────────────────────────────────
+    TacticalBottomActionBar {
+        id:                     _tacticalActionBar
+        anchors.bottom:         parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        width:                  Math.min(parent.width * 0.7, ScreenTools.defaultFontPixelWidth * 60)
+        z:                      QGroundControl.zOrderWidgets
+        visible:                !QGroundControl.videoManager.fullScreen && _showSingleVehicleUI
     }
 
     // Sci-Fi Boot Loader / Scanning Vector when no vehicle is connected

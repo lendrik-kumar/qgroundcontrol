@@ -83,6 +83,10 @@ set_source_files_properties(ScreenTools.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
 )
 
+set_source_files_properties(TacticalTheme.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
+
 qt_add_qml_module(QGroundControlControlsModule
     URI QGroundControl.Controls
     VERSION 1.0
@@ -181,6 +185,7 @@ qt_add_qml_module(QGroundControlControlsModule
         TacticalDialogFrame.qml
         TacticalDrawer.qml
         TacticalPanelFrame.qml
+        TacticalTheme.qml
         TimedProgressTracker.qml
         ToolIndicatorPage.qml
         ToolStrip.qml
@@ -226,6 +231,10 @@ qt_add_resources(QGroundControlControlsModule qmlcontrols_resources
 set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/CogWheels.png"
     PROPERTIES QT_RESOURCE_ALIAS "subMenuButtonImage.png")
 
+# Gear.svg aliases gear-black.svg — used by TacticalSidebar and SelectViewDropdown.
+set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/gear-black.svg"
+    PROPERTIES QT_RESOURCE_ALIAS "Gear.svg")
+
 qt_add_resources(QGroundControlControlsModule qmlcontrols_qmlimages
     PREFIX "/qmlimages"
     BASE "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -233,6 +242,7 @@ qt_add_resources(QGroundControlControlsModule qmlcontrols_qmlimages
         "${CMAKE_CURRENT_SOURCE_DIR}/arrow-down.png"
         "${CMAKE_CURRENT_SOURCE_DIR}/checkbox-check.svg"
         "${CMAKE_SOURCE_DIR}/resources/CogWheels.png"
+        "${CMAKE_SOURCE_DIR}/resources/gear-black.svg"
 )
 
 # Globbed because FactValueGrid enumerates :/InstrumentValueIcons/ at runtime
